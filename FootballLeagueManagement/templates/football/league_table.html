@@ -1,0 +1,208 @@
+{% extends 'football/base.html' %}
+
+{% block content %}
+
+<style>
+/* =========================
+   GENERAL LAYOUT
+========================= */
+.league-container {
+    max-width: 100%;
+    margin: auto;
+    padding: 10px;
+}
+
+.league-title {
+    text-align: center;
+    color: #ffffff; /* white */
+    background-color: #000000; /* black background */
+    padding: 8px 0;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+/* =========================
+   TABLE WRAPPER
+========================= */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 6px;
+}
+
+/* =========================
+   TABLE STYLING
+========================= */
+.league-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 14px;
+    background-color: #ffffff; /* keep table background white */
+}
+
+.league-table th,
+.league-table td {
+    border: 1px solid #ddd;
+    padding: 6px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* =========================
+   STICKY HEADER
+========================= */
+.league-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #c8e6c9; /* light green header for contrast */
+}
+
+/* =========================
+   TEAM COLUMN
+========================= */
+.team-name {
+    text-align: left;
+    color: #3f51b5;
+    font-weight: 500;
+}
+
+/* =========================
+   ROW COLORS
+========================= */
+.champion {
+    background-color: #c8f7c5;
+}
+
+.top-five {
+    background-color: #fff3b0;
+}
+
+.relegation {
+    background-color: #f7c5c5;
+}
+
+/* =========================
+   MOBILE OPTIMIZATION
+========================= */
+@media (max-width: 768px) {
+    .league-table {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .league-table {
+        font-size: 12px;
+    }
+
+    .league-title {
+        font-size: 18px;
+    }
+}
+</style>
+
+<div class="league-container">
+
+    <!-- Filters -->
+    <form method="get" style="margin-bottom:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+        <label style="margin-bottom:0;">Year:
+            <select name="year" class="form-select form-select-sm" style="display:inline-block; width:auto;">
+                <option value="">All</option>
+                {% for s in seasons %}
+                <option value="{{ s.year }}" {% if selected_year|stringformat:"s" == s.year|stringformat:"s" %}selected{% endif %}>{{ s.year }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label style="margin-bottom:0;">Scope:
+            <select name="scope" class="form-select form-select-sm" style="display:inline-block; width:auto;">
+                <option value="">Overall</option>
+                <option value="home" {% if selected_scope == 'home' %}selected{% endif %}>Home Only</option>
+                <option value="away" {% if selected_scope == 'away' %}selected{% endif %}>Away Only</option>
+            </select>
+        </label>
+
+        <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+        <a href="{% url 'league_standings' %}" class="btn btn-sm btn-link">Clear</a>
+    </form>
+
+    <div id="standingsExportArea" style="padding-top:0;">
+      <h2 class="league-title">PVPSL{% if selected_year %} {{ selected_year }}{% endif %}{% if computed_week %} WEEK {{ computed_week }}{% endif %}</h2>
+      <div class="table-wrapper" style="overflow-x:auto; margin-top:4px;">
+        <table class="league-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Team</th>
+                    <th>P</th>
+                    <th>W</th>
+                    <th>D</th>
+                    <th>L</th>
+                    <th>GF</th>
+                    <th>GA</th>
+                    <th>GD</th>
+                    <th>Pts</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for entry in standings %}
+                <tr class="{{ entry.row_class }}">
+                    <td><strong>{{ entry.position }}</strong></td>
+                    <td class="team-name">{{ entry.team.name }}</td>
+                    <td>{{ entry.played }}</td>
+                    <td>{{ entry.wins }}</td>
+                    <td>{{ entry.draws }}</td>
+                    <td>{{ entry.losses }}</td>
+                    <td>{{ entry.goals_for }}</td>
+                    <td>{{ entry.goals_against }}</td>
+                    <td><strong>{{ entry.goal_difference }}</strong></td>
+                    <td><strong>{{ entry.points }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10">No matches played yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Download button -->
+    <div style="margin-top:1.5rem; display:flex; gap:1rem; align-items:center;">
+        <button id="downloadTable" class="btn btn-primary btn-sm">Download table as PNG</button>
+        <p class="text-muted small mb-0">Click to save the standings table as an image.</p>
+    </div>
+
+</div>
+
+<!-- html2canvas to export table as image -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+(function(){
+    const btn = document.getElementById('downloadTable');
+    if(btn){
+      btn.addEventListener('click', function(){
+          // capture heading + table together
+          const el = document.getElementById('standingsExportArea');
+          if(!el) return;
+          html2canvas(el, {useCORS:true, scale:2}).then(canvas => {
+              const link = document.createElement('a');
+              const yearPart = ("{{ selected_year }}") ? "_{{ selected_year }}" : "";
+              const weekPart = ("{{ computed_week }}") ? "_W" + "{{ computed_week }}" : "";
+              link.download = 'PVPSL' + yearPart + weekPart + '.png';
+              link.href = canvas.toDataURL('image/png');
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+          }).catch((err)=>{
+              console.error('Failed to export standings as image', err);
+              alert('Could not export standings as image. See console for details.');
+          });
+      });
+    }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'football/base.html' %}
+
+{% block title %}{{ match.home_team.name }} vs {{ match.away_team.name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="mb-0">{{ match.home_team.name }} 
+          <small class="text-muted">{% if match.home_team_score is not None %}{{ match.home_team_score }}{% else %}-{% endif %}</small>
+          -
+          <small class="text-muted">{% if match.away_team_score is not None %}{{ match.away_team_score }}{% else %}-{% endif %}</small>
+          {{ match.away_team.name }}</h3>
+        <div class="small text-muted">{{ match.date }} • {{ match.time }} • {{ match.venue.name }}</div>
+      </div>
+      <div>
+        <span class="badge bg-secondary">Status: {{ match.status }}</span>
+      </div>
+    </div>
+
+    <hr>
+
+    <h5>Referees</h5>
+    <ul>
+      {% for r in referees %}
+        <li>{{ r.ref.name }} {% if r.ref_type %}({{ r.ref_type }}){% endif %}</li>
+      {% empty %}
+        <li>No referees assigned.</li>
+      {% endfor %}
+    </ul>
+
+    <h5>Cards</h5>
+    <ul>
+      {% for c in cards %}
+        <li>{{ c.player.name }} ({{ c.player.team.name }}) - {{ c.card_type }}</li>
+      {% empty %}
+        <li>No cards recorded.</li>
+      {% endfor %}
+    </ul>
+
+    <h5>Match Issues</h5>
+    <ul>
+      {% for i in issues %}
+        <li>{{ i.issue_type }} - {{ i.description }} <em class="text-muted">(Status: {{ i.status }})</em></li>
+      {% empty %}
+        <li>No issues recorded.</li>
+      {% endfor %}
+    </ul>
+
+    <div class="mt-3">
+      <a href="{% url 'match_list' %}" class="btn btn-sm btn-outline-secondary">Back to matches</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

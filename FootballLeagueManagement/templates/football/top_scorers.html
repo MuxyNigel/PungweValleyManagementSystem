@@ -1,0 +1,18 @@
+{% extends 'football/base.html' %}
+{% block content %}
+<h1 style="color:#f44336;">Top Scorers</h1>
+<table style="width:100%; border-collapse: collapse;">
+  <tr style="background-color:#ffe0e0;">
+    <th>Player</th>
+    <th>Team</th>
+    <th>Goals</th>
+  </tr>
+  {% for player in players %}
+  <tr>
+    <td>{{ player.name }}</td>
+    <td>{{ player.team.name }}</td>
+    <td>{{ player.goals }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

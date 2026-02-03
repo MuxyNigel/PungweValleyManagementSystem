@@ -1,0 +1,76 @@
+{% extends 'football/base.html' %}
+{% block content %}
+<h2>Referees</h2>
+
+<form method="get" class="mb-3 d-flex gap-2 align-items-center">
+  <label>Referee:
+    <select name="ref" class="form-select form-select-sm ms-2">
+      <option value="">Select</option>
+      {% for r in refs %}
+        <option value="{{ r.id }}" {% if selected_ref == r.id|stringformat:"s" %}selected{% endif %}>{{ r.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Team:
+    <select name="team" class="form-select form-select-sm ms-2">
+      <option value="">All</option>
+      {% for t in teams %}
+        <option value="{{ t.id }}">{{ t.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Date:
+    <input type="date" name="date" class="form-control form-control-sm ms-2">
+  </label>
+
+  <button class="btn btn-sm btn-primary ms-2">Filter</button>
+</form>
+
+<div class="row">
+  <div class="col-md-4">
+    <h5>All Referees</h5>
+    <ul class="list-group">
+      {% for r in refs %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="{% url 'referee_detail' r.id %}">{{ r.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="col-md-8">
+    {% if matches %}
+      <h5>Matches officiated</h5>
+      <table class="table table-sm">
+        <thead><tr><th>Date</th><th>Match</th><th>Venue</th><th>Officials</th></tr></thead>
+        <tbody>
+          {% for match in matches %}
+            <tr>
+              <td>{{ match.date }}</td>
+              <td>{{ match.home_team.name }} vs {{ match.away_team.name }}</td>
+              <td>{{ match.venue.name }}</td>
+              <td>
+                {% if match.home_team_score is not None and match.away_team_score is not None %}
+                  {{ match.home_team_score }} - {{ match.away_team_score }}
+                {% else %}
+                  N/A
+                {% endif %}
+              </td>
+              <td>
+                {% for mr in match.matchref_set.all %}
+                  {{ mr.ref.name }} ({{ mr.ref_type }}){% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% elif selected_ref %}
+      <p>No matches found for this referee.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

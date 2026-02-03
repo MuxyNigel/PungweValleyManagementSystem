@@ -1,0 +1,84 @@
+{% extends 'football/base.html' %}
+{% block content %}
+<h1 style="color:#4CAF50;">{% if request.GET.status %}{{ request.GET.status }} Matches{% else %}Matches{% endif %}</h1>
+
+<form method="get" style="margin-bottom: 1rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+  <label>Home Team:
+    <select name="home_team">
+      <option value="">All</option>
+      {% for team in teams %}
+        <option value="{{ team.id }}" {% if request.GET.home_team == team.id|stringformat:"s" %}selected{% endif %}>{{ team.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Away Team:
+    <select name="away_team">
+      <option value="">All</option>
+      {% for team in teams %}
+        <option value="{{ team.id }}" {% if request.GET.away_team == team.id|stringformat:"s" %}selected{% endif %}>{{ team.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Year:
+    <select name="year">
+      <option value="">All</option>
+      {% for y in years %}
+        <option value="{{ y }}" {% if request.GET.year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Date:
+    <input type="date" name="date" value="{{ request.GET.date }}">
+  </label>
+
+  <label>Status:
+    <select name="status">
+      <option value="">All</option>
+      {% for s in statuses %}
+        <option value="{{ s }}" {% if request.GET.status == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <button type="submit">Filter</button>
+  <a href="{% url 'match_list' %}" style="margin-left:0.5rem;">Clear</a>
+</form>
+
+{% if matches %}
+<table style="width:100%; border-collapse: collapse;">
+  <tr style="background-color:#f9aaaa;">
+    <th>Date</th>
+    <th>Time</th>
+    <th>Teams</th>
+    <th>Venue</th>
+    <th>Score</th>
+    <th>Status</th>
+  </tr>
+
+  {% for match in matches %}
+  <tr style="border-bottom:1px solid #39da09;">
+    <td>{{ match.date }}</td>
+    <td>{{ match.time }}</td>
+    <td>
+      <strong style="color:#ef0d91;">{{ match.home_team.name }}</strong> vs <strong style="color:#1928f3;">{{ match.away_team.name }}</strong>
+    </td>
+    <td>{{ match.venue.name }}</td>
+    <td>
+      {% if match.home_team_score is not None and match.away_team_score is not None %}
+        {{ match.home_team_score }} - {{ match.away_team_score }}
+      {% else %}
+        <!-- No score available -->
+      {% endif %}
+    </td>
+    <td>{{ match.status }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No completed matches found.</p>
+{% endif %}
+
+{% endblock %}

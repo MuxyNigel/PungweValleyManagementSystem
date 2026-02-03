@@ -1,0 +1,26 @@
+{% extends 'football/base.html' %}
+{% block content %}
+<h1 style="color:#009688;">{{ team.name }}</h1>
+<img src="{{ team.logo.url }}" alt="{{ team.name }} Logo" style="width:200px; height:auto;">
+<p><strong>Coach:</strong> {{ team.coach }}</p>
+<h3>Players</h3>
+<ul>
+  {% for player in players %}
+    <li>{{ player.name }} - {{ player.position }}</li>
+  {% endfor %}
+</ul>
+
+<h3>Recent Matches</h3>
+<ul>
+  {% for match in recent_matches %}
+    <li>
+      <a href="{% url 'match_detail' match.id %}">{{ match.date }}: {{ match.home_team.name }} vs {{ match.away_team.name }}</a>
+      {% if match.home_team_score is not None and match.away_team_score is not None %}
+        - Score: {{ match.home_team_score }} - {{ match.away_team_score }}
+      {% else %}
+        - <em>No score available</em>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

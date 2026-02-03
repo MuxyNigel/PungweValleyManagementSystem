@@ -1,0 +1,22 @@
+{% extends 'football/base.html' %}
+{% block content %}
+<h2>Notices</h2>
+{% if notices %}
+<ul class="list-group">
+  {% for n in notices %}
+    {% if n.level == 'warning' %}
+      <li class="list-group-item list-group-item-warning">
+    {% elif n.level == 'danger' %}
+      <li class="list-group-item list-group-item-danger">
+    {% else %}
+      <li class="list-group-item list-group-item-info">
+    {% endif %}
+      <h5>{{ n.title }} <small class="text-muted">({{ n.created_at|date:'Y-m-d H:i' }})</small></h5>
+      <p>{{ n.body }}</p>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No notices at the moment.</p>
+{% endif %}
+{% endblock %}

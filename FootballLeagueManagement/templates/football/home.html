@@ -1,0 +1,51 @@
+{% extends 'football/base.html' %}
+
+{% load static %}
+
+{% block title %}Home - Pungwe Valley Football League{% endblock %}
+
+{% block content %}
+<div class="home-container text-center d-flex align-items-center justify-content-center flex-column" style="background-image: url('{% static 'image/pungwevalleyimage.jpeg' %}'); background-size: cover; background-position: center; min-height: 100vh;">
+  <h1 class="display-3 fw-bold mb-4 text-white">Welcome to Pungwe Valley Professional Football League</h1>
+  <h2 class="display-4 fw-bold mb-4 text-white">Experience the thrill of local football!</h2>
+  <a href="/matches/" class="btn btn-lg btn-primary mb-5">View Upcoming Matches</a>
+</div>
+
+<!-- Additional content sections -->
+<h1 class="mb-4 mt-5 text-center">Welcome to the Football Portal</h1>
+<p class="text-center mb-4">This is the home page with latest news, history, or introductory info.</p>
+<div class="container mb-5">
+  <div class="row">
+    <!-- Upcoming Fixtures Card -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title">Upcoming Fixtures</h5>
+          <p class="card-text">Check out the upcoming matches and schedules.</p>
+          <a href="/matches/" class="btn btn-primary mt-auto">View Fixtures</a>
+        </div>
+      </div>
+    </div>
+    <!-- Standings Card -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title">Standings</h5>
+          <p class="card-text">See the current league standings.</p>
+          <a href="/standings/" class="btn btn-primary mt-auto">View Standings</a>
+        </div>
+      </div>
+    </div>
+    <!-- Top Scorers Card -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title">Top Scorers</h5>
+          <p class="card-text">Find out who are the top goal scorers.</p>
+          <a href="/top-scorers/" class="btn btn-primary mt-auto">View Top Scorers</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

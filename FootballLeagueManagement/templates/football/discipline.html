@@ -1,0 +1,51 @@
+{% extends 'football/base.html' %}
+
+{% block content %}
+<h2>Player Discipline Overview</h2>
+<form method="get" style="margin-bottom:1rem;">
+    <label>Season:
+        <select name="season" onchange="this.form.submit()">
+            <option value="">All</option>
+            {% for s in seasons %}
+                <option value="{{ s.year }}" {% if selected_season and selected_season.year == s.year %}selected{% endif %}>{{ s.year }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</form>
+
+<table border="1" cellpadding="8" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>Player</th>
+            <th>Total Yellow Cards</th>
+            <th>Total Red Cards</th>
+            <th>Suspensions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in players %}
+        <tr>
+            <td>{{ entry.player.name }}</td>
+            <td>{{ entry.total_yellows }}</td>
+            <td>{{ entry.total_reds }}</td>
+            <td>
+                {% if entry.suspensions %}
+                    <ul>
+                    {% for suspend in entry.suspensions %}
+                        <li>
+                            {{ suspend.reason }} ({{ suspend.type }})
+                            {% if suspend.match %}
+                                - after match on {{ suspend.match.date }} at {{ suspend.match.venue.name }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <em>No suspensions</em>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

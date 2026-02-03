@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Pungwe Valley Professional Football League{% endblock %}</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    /* Optional custom styles */
+    body {
+      padding-top: 56px; /* space for fixed navbar */
+      background-color: #2e7d32; /* solid green background */
+    }
+
+    /* Keep main content containers white for readability */
+    .container {
+      background: #ffffff;
+    }
+
+    /* Ensure navbar and footer internal containers are transparent so their bg-* classes show */
+    .navbar .container,
+    footer .container {
+      background: transparent !important;
+    }
+
+    /* Make the Teams dropdown scrollable when there are many teams */
+    .dropdown-menu.teams-dropdown {
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    /* Do not override link colors globally to avoid white-on-white in containers */
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'home' %}">Pungwe Valley Professional Football League</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <form class="d-flex ms-auto me-3 my-1" role="search" onsubmit="return false;">
+          <div style="position:relative;">
+            <input id="teamSearch" class="form-control form-control-sm" type="search" placeholder="Search teams..." aria-label="Search teams" autocomplete="off" style="width:220px;">
+            <div id="teamSuggestions" class="list-group" style="position:absolute; z-index:2000; width:100%; display:none;"></div>
+          </div>
+        </form>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'match_list' %}">Matches</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'league_standings' %}">Standings</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'top_scorers' %}">Top Scorers</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'player_discipline' %}">Discipline</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'referees' %}">Referees</a></li>
+          <!-- Dynamic Teams dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              Teams
+            </a>
+            <ul class="dropdown-menu teams-dropdown dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+              {% for t in site_teams %}
+                <li><a class="dropdown-item" href="{% url 'team_profile' t.id %}">{{ t.name }}</a></li>
+              {% empty %}
+                <li><span class="dropdown-item">No teams</span></li>
+              {% endfor %}
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container my-4" style="padding-bottom:90px;"> <!-- padding-bottom to avoid fixed footer overlap -->
+    {% block content %}{% endblock %}
+  </div>
+
+
+
+  <!-- Footer (fixed and responsive contact) -->
+  <footer class="bg-dark text-white py-3" style="position:fixed; bottom:0; left:0; right:0; z-index:2000;">
+    <div class="container text-center">
+      &copy; 2026 Pungwe Valley Professional Football League. All rights reserved.
+      <div class="mt-2 d-md-none">
+        <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#contactDetailsSmall">Contact</button>
+        <div id="contactDetailsSmall" class="collapse mt-2">
+          <div class="small text-white-50">
+            <strong>Developer / Contact</strong>: Nigel Mubure<br>
+            Email: <a href="mailto:nimubure21@gmail.com" style="color:#fff; text-decoration:underline;">nimubure21@gmail.com</a><br>
+            Call: +263784264672<br>
+            WhatsApp: +263789727983
+          </div>
+        </div>
+      </div>
+      <div class="mt-2 d-none d-md-block small text-white-50">
+        <strong>Developer / Contact</strong>: Nigel Mubure •
+        Email: <a href="mailto:nimubure21@gmail.com" style="color:#fff; text-decoration:underline;">nimubure21@gmail.com</a> •
+        Call: +263784264672 • WhatsApp: +263789727983
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Navbar team search autocomplete -->
+  <script>
+  (function(){
+    const input = document.getElementById('teamSearch');
+    const suggestions = document.getElementById('teamSuggestions');
+    let timer = null;
+
+    function hideSuggestions(){ suggestions.style.display = 'none'; suggestions.innerHTML = ''; }
+
+    function showSuggestions(list){
+      suggestions.innerHTML = '';
+      if(!list.length){ hideSuggestions(); return; }
+      list.forEach(item => {
+        const a = document.createElement('a');
+        a.className = 'list-group-item list-group-item-action';
+        a.href = '/teams/' + item.id + '/';
+        a.textContent = item.name;
+        suggestions.appendChild(a);
+      });
+      suggestions.style.display = 'block';
+    }
+
+    function doSearch(q){
+      if(!q) { hideSuggestions(); return; }
+      fetch('/teams/search/?q=' + encodeURIComponent(q))
+        .then(r => r.json())
+        .then(data => showSuggestions(data))
+        .catch(()=> hideSuggestions());
+    }
+
+    if(input){
+      input.addEventListener('input', function(e){
+        const q = this.value.trim();
+        clearTimeout(timer);
+        timer = setTimeout(()=> doSearch(q), 250);
+      });
+
+      document.addEventListener('click', function(e){
+        if(!input.contains(e.target) && !suggestions.contains(e.target)) hideSuggestions();
+      });
+    }
+  })();
+  </script>
+</body>
+</html>
