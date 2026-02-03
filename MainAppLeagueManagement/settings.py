@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-gscoopwuha6$l=#*18o8bcp9&!($1-0#dl5t^b#=&50&w54n$*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['pungwevalleyleaguemanagement.onrender.com']
 
 
 # Application definition
