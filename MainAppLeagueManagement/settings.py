@@ -82,14 +82,13 @@ WSGI_APPLICATION = 'MainAppLeagueManagement.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'PungweValleyFootballLeague',
-        'USER': 'postgres',
-        'PASSWORD': '@nigel2002',
-        'HOST': 'localhost',  # or your database server's IP/domain
-        'PORT': '5432',       # default PostgreSQL port
+        'NAME': os.environ.get('DB_NAME', 'PungweValleyFootballLeague'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', '@nigel2002'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),  # or your production database host
+        'PORT': os.environ.get('DB_PORT', '5432'),       # default PostgreSQL port
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
