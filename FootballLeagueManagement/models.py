@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator, RegexValidator
+from django.core.exceptions import ValidationError
+from django.db.models import F
 
 class Season(models.Model):
     year = models.IntegerField(primary_key=True)
@@ -13,7 +15,7 @@ class Season(models.Model):
 
 class Team(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     logo = models.ImageField(upload_to='team_logos/')
     coach = models.CharField(max_length=100)
     contact_details = models.CharField(
@@ -85,6 +87,15 @@ class Match(models.Model):
     away_team_score = models.PositiveIntegerField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Scheduled')  # e.g., Scheduled, Completed
 
+    def clean(self):
+        if self.home_team_id == self.away_team_id:
+            raise ValidationError("Home and away team cannot be the same.")
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.home_team} vs {self.away_team} on {self.date}"
 
@@ -98,6 +109,25 @@ class MatchRef(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
     ref = models.ForeignKey(Referee, on_delete=models.CASCADE)
     ref_type = models.CharField(max_length=20, choices=STATUS_CHOICES)  # e.g., 'Center', 'Assistant1', 'Assistant2'
+
+    def clean(self):
+        # Prevent duplicate roles for the same match
+        if MatchRef.objects.filter(match=self.match, ref_type=self.ref_type).exclude(pk=self.pk).exists():
+            raise ValidationError(f"A {self.ref_type} referee has already been allocated to this match.")
+        # Prevent same referee being added multiple times to the same match
+        if MatchRef.objects.filter(match=self.match, ref=self.ref).exclude(pk=self.pk).exists():
+            raise ValidationError("This official has already been allocated to this match.")
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['match', 'ref_type'], name='unique_match_ref_type'),
+            models.UniqueConstraint(fields=['match', 'ref'], name='unique_match_ref_assign'),
+        ]
 
 class Card(models.Model):
     STATUS_CHOICES = [
@@ -134,11 +164,14 @@ class Fine(models.Model):
     ]
     season = models.ForeignKey(Season, on_delete=models.CASCADE, null=True, blank=True)
     entity_type = models.CharField(max_length=20, choices=ENTITY_CHOICES)  # 'Player', 'Team', 'Referee'
-    entity_id = models.PositiveIntegerField()
+    entity_name = models.CharField(max_length=150, null=True, blank=True)
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     reason = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+
+    def __str__(self):
+        return f"{self.entity_type}: {self.entity_name} - {self.amount}"
 
 class Contract(models.Model):
     ENTITY_CHOICES = [
@@ -151,11 +184,14 @@ class Contract(models.Model):
         ('Expired', 'Expired'),
     ]
     entity_type = models.CharField(max_length=20, choices=ENTITY_CHOICES)  # 'Player', 'Referee', etc.
-    entity_id = models.PositiveIntegerField()
+    entity_name = models.CharField(max_length=150, null=True, blank=True)
     start_date = models.DateField()
     end_date = models.DateField()
     terms = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
+
+    def __str__(self):
+        return f"{self.entity_type}: {self.entity_name} ({self.status})"
 
 # You can extend the User model for roles
 # models.py

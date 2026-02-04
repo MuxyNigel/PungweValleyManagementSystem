@@ -76,17 +76,17 @@ class MatchIssueAdmin(admin.ModelAdmin):
 # Admin for Fine
 @admin.register(Fine)
 class FineAdmin(admin.ModelAdmin):
-    list_display = ('entity_type', 'entity_id', 'amount', 'reason')
-    search_fields = ('reason',)
+    list_display = ('entity_type', 'entity_name', 'amount', 'reason')
+    search_fields = ('reason','entity_name')
 
 # Admin for Contract
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
     # Note: No 'player', 'team', or 'salary' fields in your model
-    # Adjusted to display 'entity_type', 'entity_id', 'start_date', 'end_date', 'status'
-    list_display = ('entity_type', 'entity_id', 'start_date', 'end_date', 'status')
+    # Adjusted to display 'entity_type', 'entity_name', 'start_date', 'end_date', 'status'
+    list_display = ('entity_type', 'entity_name', 'start_date', 'end_date', 'status')
     list_filter = ('entity_type', 'status')
-    search_fields = ('entity_type',)
+    search_fields = ('entity_type','entity_name')
 
 # Admin for CustomUser
 @admin.register(CustomUser)
