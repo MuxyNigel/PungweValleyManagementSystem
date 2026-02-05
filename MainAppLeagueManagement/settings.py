@@ -80,14 +80,34 @@ WSGI_APPLICATION = 'MainAppLeagueManagement.wsgi.application'
 
 import os
 import dj_database_url
+from pathlib import Path
 
-DATABASES = {
-    'default': dj_database_url.parse(
-        os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if DATABASE_URL:
+    # Render / Production
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+else:
+    # Local development (your local Postgres)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "PungweValleyFootballLeague",
+            "USER": "postgres",
+            "PASSWORD": "@nigel2002",
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
+
 
 
 # Password validation
