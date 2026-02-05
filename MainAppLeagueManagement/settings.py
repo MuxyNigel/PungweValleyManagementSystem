@@ -147,3 +147,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 # No STATICFILES_DIRS needed if using app-level static folders
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Include team_logos so images in the repo are served by the staticfiles app
+STATICFILES_DIRS = [
+    BASE_DIR / "team_logos",
+]
