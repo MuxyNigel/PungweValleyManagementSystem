@@ -7,17 +7,18 @@ from .models import (
 # Customize admin site titles
 admin.site.site_header = "Pungwe Valley Football League Management"
 admin.site.site_title = "Pungwe Valley Admin Portal"
-admin.site.index_title = "Dashboard"
+admin.site.index_title = "League Management Dashboard"
 
 # Inline admin for Card inside Match
 class CardInline(admin.TabularInline):
     model = Card
     extra = 1
 
-# Inline admin for MatchRef inside Match
+
 class MatchRefInline(admin.TabularInline):
     model = MatchRef
     extra = 1
+    #formset = MatchRefInlineFormset
 
 # Admin for Team
 @admin.register(Team)

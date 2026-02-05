@@ -111,12 +111,20 @@ class MatchRef(models.Model):
     ref_type = models.CharField(max_length=20, choices=STATUS_CHOICES)  # e.g., 'Center', 'Assistant1', 'Assistant2'
 
     def clean(self):
+        # If match isn't saved yet (e.g., creating a Match with inlines in admin),
+        # skip DB lookups - the inline formset will validate duplicates among submitted forms.
+        if not getattr(self, 'match_id', None):
+            super().clean()
+            return
         # Prevent duplicate roles for the same match
         if MatchRef.objects.filter(match=self.match, ref_type=self.ref_type).exclude(pk=self.pk).exists():
             raise ValidationError(f"A {self.ref_type} referee has already been allocated to this match.")
         # Prevent same referee being added multiple times to the same match
         if MatchRef.objects.filter(match=self.match, ref=self.ref).exclude(pk=self.pk).exists():
             raise ValidationError("This official has already been allocated to this match.")
+        # Prevent a referee from being assigned to a different match on the same date
+        if MatchRef.objects.filter(ref=self.ref, match__date=self.match.date).exclude(match=self.match).exists():
+            raise ValidationError(f"{self.ref.name} is already assigned to another match on {self.match.date}.")
         super().clean()
 
     def save(self, *args, **kwargs):

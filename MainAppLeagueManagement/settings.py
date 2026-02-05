@@ -27,9 +27,7 @@ SECRET_KEY = 'django-insecure-gscoopwuha6$l=#*18o8bcp9&!($1-0#dl5t^b#=&50&w54n$*
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'pungwevalleyleaguemanagement.onrender.com',
-    '127.0.0.1',
-    'localhost'
+    'pungwevalleyleaguemanagement.onrender.com'
 ]
 # Application definition
 
@@ -79,16 +77,18 @@ WSGI_APPLICATION = 'MainAppLeagueManagement.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+
+import os
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'PungweValleyFootballLeague'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', '@nigel2002'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),  # or your production database host
-        'PORT': os.environ.get('DB_PORT', '5432'),       # default PostgreSQL port
-    }
+    'default': dj_database_url.parse(
+        os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
