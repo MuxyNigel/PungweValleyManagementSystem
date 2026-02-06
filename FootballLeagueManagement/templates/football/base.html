@@ -36,11 +36,30 @@
 
     body {
       padding-top: 70px;
-      padding-bottom: 100px;
+      padding-bottom: 140px;
       background: linear-gradient(135deg, #0F1C2E 0%, #1a3a4a 100%);
       color: var(--text-dark);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
+      overflow-y: overlay;
+    }
+
+    /* Custom scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 184, 28, 0.1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--secondary-color);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ffa500;
     }
 
     /* ==================== NAVBAR STYLING ==================== */
@@ -435,6 +454,93 @@
       font-size: 1.1rem;
       opacity: 0.95;
     }
+
+    /* ==================== OVERFLOW MENU STYLING ==================== */
+    .overflow-menu {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .overflow-menu-toggle {
+      background: transparent;
+      border: none;
+      color: #e0e0e0;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+      display: none;
+    }
+
+    .overflow-menu-toggle:hover {
+      color: var(--secondary-color);
+    }
+
+    .overflow-menu-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #1E5A5A 100%);
+      border: 2px solid var(--secondary-color);
+      border-radius: 8px;
+      min-width: 220px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 2000;
+      display: none;
+      margin-top: 0.5rem;
+    }
+
+    .overflow-menu-dropdown.show {
+      display: block;
+    }
+
+    .overflow-menu-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      color: #e0e0e0;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    .overflow-menu-dropdown a:last-child {
+      border-bottom: none;
+    }
+
+    .overflow-menu-dropdown a:hover {
+      background: rgba(255, 184, 28, 0.15);
+      color: var(--secondary-color);
+      padding-left: 2rem;
+    }
+
+    .overflow-menu-dropdown a i {
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Show overflow menu on smaller screens */
+    @media (max-width: 1199px) {
+      .overflow-menu-toggle {
+        display: block;
+      }
+
+      .navbar-nav .nav-item:nth-child(5),
+      .navbar-nav .nav-item:nth-child(6) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 991px) {
+      .overflow-menu {
+        margin-left: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -459,8 +565,6 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'match_list' %}"><i class="fas fa-futbol"></i> Matches</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'league_standings' %}"><i class="fas fa-list"></i> Standings</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'top_scorers' %}"><i class="fas fa-trophy"></i> Scorers</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'player_discipline' %}"><i class="fas fa-exclamation-circle"></i> Discipline</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'referees' %}"><i class="fas fa-users"></i> Referees</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'venues' %}"><i class="fas fa-map-marker-alt"></i> Venues</a></li>
           <!-- Dynamic Teams dropdown -->
           <li class="nav-item dropdown">
@@ -474,6 +578,20 @@
                 <li><span class="dropdown-item">No teams</span></li>
               {% endfor %}
             </ul>
+          </li>
+          <!-- Overflow Menu for smaller screens -->
+          <li class="overflow-menu">
+            <button class="overflow-menu-toggle" id="overflowMenuToggle">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <div class="overflow-menu-dropdown" id="overflowMenuDropdown">
+              <a href="{% url 'player_discipline' %}">
+                <i class="fas fa-exclamation-circle"></i> Discipline
+              </a>
+              <a href="{% url 'referees' %}">
+                <i class="fas fa-users"></i> Referees
+              </a>
+            </div>
           </li>
         </ul>
       </div>
@@ -557,7 +675,31 @@
       });
     }
   })();
-  </script>
+
+  // Overflow menu toggle
+  (function(){
+    const toggle = document.getElementById('overflowMenuToggle');
+    const dropdown = document.getElementById('overflowMenuDropdown');
+
+    if(toggle && dropdown){
+      toggle.addEventListener('click', function(e){
+        e.stopPropagation();
+        dropdown.classList.toggle('show');
+      });
+
+      document.addEventListener('click', function(e){
+        if(!toggle.contains(e.target) && !dropdown.contains(e.target)){
+          dropdown.classList.remove('show');
+        }
+      });
+
+      dropdown.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function(){
+          dropdown.classList.remove('show');
+        });
+      });
+    }
+  })();
   </script>
 </body>
 </html>
