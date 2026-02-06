@@ -53,7 +53,7 @@ class Referee(models.Model):
          blank=True,
         validators=[
             RegexValidator(
-                regex='^\d{10}$',
+                regex=r'^\d{10}$',
                 message='Contact details must be exactly 10 digits.',
                 code='invalid_contact_details'
             ),
