@@ -148,10 +148,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_DIRS = [
+# Only include static folders that actually exist to avoid warnings on deploy
+_possible_static_dirs = [
     BASE_DIR / "static",
     BASE_DIR / "team_logos",
 ]
+STATICFILES_DIRS = [p for p in _possible_static_dirs if p.exists()]
 
 # WhiteNoise compression and caching
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
