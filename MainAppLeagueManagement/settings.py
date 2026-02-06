@@ -21,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gscoopwuha6$l=#*18o8bcp9&!($1-0#dl5t^b#=&50&w54n$*'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-gscoopwuha6$l=#*18o8bcp9&!($1-0#dl5t^b#=&50&w54n$*')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
     'pungwevalleyleaguemanagement.onrender.com'
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -145,9 +146,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-# No STATICFILES_DIRS needed if using app-level static folders
 STATIC_ROOT = BASE_DIR / "staticfiles"
-# Include team_logos so images in the repo are served by the staticfiles app
+
 STATICFILES_DIRS = [
     BASE_DIR / "team_logos",
 ]
+
+# WhiteNoise compression and caching
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
