@@ -6,38 +6,444 @@
   <title>{% block title %}Pungwe Valley Professional Football League{% endblock %}</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    /* Optional custom styles */
+    /* ==================== PROFESSIONAL FOOTBALL LEAGUE COLOR SCHEME ==================== */
+    :root {
+      --primary-color: #1E5A5A;      /* Deep Teal */
+      --secondary-color: #FFB81C;    /* Gold Accent */
+      --dark-bg: #0F1C2E;            /* Very Dark Blue */
+      --light-bg: #f8f9fa;           /* Light Gray */
+      --text-dark: #1a1a1a;          /* Dark Text */
+      --text-light: #6c757d;         /* Light Gray Text */
+      --card-bg: #ffffff;            /* White Cards */
+      --border-color: #e9ecef;       /* Light Border */
+      --success-color: #28a745;      /* Green for success/completed */
+      --danger-color: #dc3545;       /* Red for danger */
+      --warning-color: #ffc107;      /* Yellow for warnings */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
     body {
-      padding-top: 56px; /* space for fixed navbar */
-      background-color: #2e7d32; /* solid green background */
+      padding-top: 70px;
+      padding-bottom: 100px;
+      background: linear-gradient(135deg, #0F1C2E 0%, #1a3a4a 100%);
+      color: var(--text-dark);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
     }
 
-    /* Keep main content containers white for readability */
+    /* ==================== NAVBAR STYLING ==================== */
+    .navbar {
+      background: linear-gradient(90deg, var(--dark-bg) 0%, #1E5A5A 100%);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border-bottom: 3px solid var(--secondary-color);
+      padding: 1rem 0;
+    }
+
+    .navbar-brand {
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--secondary-color) !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .navbar-brand:hover {
+      color: #ffd54f !important;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link {
+      color: #e0e0e0 !important;
+      font-weight: 600;
+      padding: 0.5rem 1rem !important;
+      transition: all 0.3s ease;
+      position: relative;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-link:hover {
+      color: var(--secondary-color) !important;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 50%;
+      background-color: var(--secondary-color);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* ==================== CONTAINER & CONTENT ==================== */
     .container {
-      background: #ffffff;
+      background: transparent;
+      max-width: 1200px;
     }
 
-    /* Ensure navbar and footer internal containers are transparent so their bg-* classes show */
-    .navbar .container,
+    .content-wrapper {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* ==================== HEADINGS ==================== */
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--primary-color);
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 1rem;
+      position: relative;
+    }
+
+    h2 {
+      border-left: 4px solid var(--secondary-color);
+      padding-left: 1rem;
+    }
+
+    /* ==================== BUTTONS ==================== */
+    .btn {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-radius: 6px;
+      padding: 0.6rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+      background-color: #0d3a3a;
+      border-color: #0d3a3a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(30, 90, 90, 0.3);
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+      color: var(--dark-bg);
+    }
+
+    .btn-secondary:hover {
+      background-color: #ff9800;
+      border-color: #ff9800;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 184, 28, 0.3);
+    }
+
+    .btn-back {
+      background-color: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-back:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    /* ==================== CARDS ==================== */
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+      color: white;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* ==================== BADGES & TAGS ==================== */
+    .badge {
+      padding: 0.6rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-primary {
+      background-color: var(--primary-color);
+    }
+
+    .badge-secondary {
+      background-color: var(--secondary-color);
+      color: black;
+    }
+
+    .badge-success {
+      background-color: var(--success-color);
+    }
+
+    .badge-danger {
+      background-color: var(--danger-color);
+    }
+
+    /* ==================== FORMS ==================== */
+    .form-control, .form-select {
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.7rem 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(30, 90, 90, 0.25);
+    }
+
+    /* ==================== TABLES ==================== */
+    .table {
+      border-collapse: collapse;
+      margin-bottom: 0;
+    }
+
+    .table thead {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+      color: white;
+      text-transform: uppercase;
+      font-weight: 800;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #f0f8f8;
+    }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, var(--dark-bg) 0%, #1E5A5A 100%);
+      color: white;
+      padding: 1rem 0;
+      z-index: 2000;
+      border-top: 3px solid var(--secondary-color);
+    }
+
     footer .container {
-      background: transparent !important;
+      background: transparent;
     }
 
-    /* Make the Teams dropdown scrollable when there are many teams */
+    footer a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #ffd54f;
+    }
+
+    /* ==================== RESPONSIVE DESIGN ==================== */
+    @media (max-width: 768px) {
+      .content-wrapper {
+        padding: 1.5rem;
+      }
+
+      .navbar-brand {
+        font-size: 1rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .nav-link {
+        padding: 0.3rem 0.7rem !important;
+        font-size: 0.85rem;
+      }
+
+      footer {
+        padding: 0.8rem 0;
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding-top: 70px;
+        padding-bottom: 120px;
+      }
+
+      .container {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .content-wrapper {
+        border-radius: 0;
+        margin-bottom: 1rem;
+      }
+
+      .navbar-brand {
+        font-size: 0.9rem;
+      }
+
+      h1 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* ==================== UTILITIES ==================== */
+    .text-primary {
+      color: var(--primary-color) !important;
+    }
+
+    .text-secondary {
+      color: var(--secondary-color) !important;
+    }
+
+    .border-top-primary {
+      border-top: 3px solid var(--primary-color) !important;
+    }
+
+    .shadow-lg-primary {
+      box-shadow: 0 8px 24px rgba(30, 90, 90, 0.2);
+    }
+
+    /* ==================== SEARCH DROPDOWN ==================== */
+    #teamSuggestions {
+      background: var(--card-bg);
+      border: 2px solid var(--primary-color);
+      border-radius: 6px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+
     .dropdown-menu.teams-dropdown {
-      max-height: 260px;
+      max-height: 300px;
       overflow-y: auto;
+      border: 2px solid var(--primary-color);
+      border-radius: 6px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     }
 
-    /* Do not override link colors globally to avoid white-on-white in containers */
+    .list-group-item {
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .list-group-item:hover {
+      background-color: #f0f8f8;
+      color: var(--primary-color);
+    }
+
+    .list-group-item.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    /* ==================== ANIMATIONS ==================== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .content-wrapper {
+      animation: fadeIn 0.5s ease;
+    }
+
+    /* ==================== HERO/PAGE HEADER ==================== */
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+      color: white;
+      padding: 3rem 0;
+      margin-bottom: 2rem;
+      border-bottom: 4px solid var(--secondary-color);
+    }
+
+    .page-header h1 {
+      color: white;
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
   </style>
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="{% url 'home' %}">Pungwe Valley Professional Football League</a>
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <i class="fas fa-shield-alt"></i> Pungwe Valley Football League
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -49,16 +455,17 @@
           </div>
         </form>
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'match_list' %}">Matches</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'league_standings' %}">Standings</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'top_scorers' %}">Top Scorers</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'player_discipline' %}">Discipline</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'referees' %}">Referees</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'match_list' %}"><i class="fas fa-futbol"></i> Matches</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'league_standings' %}"><i class="fas fa-list"></i> Standings</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'top_scorers' %}"><i class="fas fa-trophy"></i> Scorers</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'player_discipline' %}"><i class="fas fa-exclamation-circle"></i> Discipline</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'referees' %}"><i class="fas fa-users"></i> Referees</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'venues' %}"><i class="fas fa-map-marker-alt"></i> Venues</a></li>
           <!-- Dynamic Teams dropdown -->
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-              Teams
+              <i class="fas fa-sitemap"></i> Teams
             </a>
             <ul class="dropdown-menu teams-dropdown dropdown-menu-end" aria-labelledby="dropdownMenuButton">
               {% for t in site_teams %}
@@ -74,30 +481,32 @@
   </nav>
 
   <!-- Main Content -->
-  <div class="container my-4" style="padding-bottom:90px;"> <!-- padding-bottom to avoid fixed footer overlap -->
+  <div class="container my-4">
     {% block content %}{% endblock %}
   </div>
 
-
-
   <!-- Footer (fixed and responsive contact) -->
-  <footer class="bg-dark text-white py-3" style="position:fixed; bottom:0; left:0; right:0; z-index:2000;">
+  <footer class="text-white py-3">
     <div class="container text-center">
-      &copy; 2026 Pungwe Valley Professional Football League. All rights reserved.
+      <div class="small">
+        &copy; 2026 Pungwe Valley Professional Football League. All rights reserved.
+      </div>
       <div class="mt-2 d-md-none">
-        <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#contactDetailsSmall">Contact</button>
+        <button class="btn btn-sm btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#contactDetailsSmall">
+          <i class="fas fa-phone"></i> Contact
+        </button>
         <div id="contactDetailsSmall" class="collapse mt-2">
-          <div class="small text-white-50">
+          <div class="small" style="color: #e0e0e0;">
             <strong>Developer / Contact</strong>: Nigel Mubure<br>
-            Email: <a href="mailto:nimubure21@gmail.com" style="color:#fff; text-decoration:underline;">nimubure21@gmail.com</a><br>
+            Email: <a href="mailto:nimubure21@gmail.com">nimubure21@gmail.com</a><br>
             Call: +263784264672<br>
             WhatsApp: +263789727983
           </div>
         </div>
       </div>
-      <div class="mt-2 d-none d-md-block small text-white-50">
+      <div class="mt-2 d-none d-md-block small" style="color: #c0c0c0;">
         <strong>Developer / Contact</strong>: Nigel Mubure •
-        Email: <a href="mailto:nimubure21@gmail.com" style="color:#fff; text-decoration:underline;">nimubure21@gmail.com</a> •
+        Email: <a href="mailto:nimubure21@gmail.com">nimubure21@gmail.com</a> •
         Call: +263784264672 • WhatsApp: +263789727983
       </div>
     </div>
@@ -148,6 +557,7 @@
       });
     }
   })();
+  </script>
   </script>
 </body>
 </html>

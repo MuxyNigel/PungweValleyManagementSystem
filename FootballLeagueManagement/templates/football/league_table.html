@@ -9,16 +9,120 @@
 .league-container {
     max-width: 100%;
     margin: auto;
-    padding: 10px;
+    padding: 0;
+}
+
+.league-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 
 .league-title {
     text-align: center;
-    color: #ffffff; /* white */
-    background-color: #000000; /* black background */
-    padding: 8px 0;
-    margin-bottom: 8px;
-    border-radius: 4px;
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0 0 1rem 0;
+    letter-spacing: 1px;
+}
+
+.league-subtitle {
+    text-align: center;
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* =========================
+   FILTER SECTION
+========================= */
+.standings-filters {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-left: 4px solid var(--secondary-color);
+}
+
+.filter-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.filter-group label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-group select {
+    padding: 0.7rem 0.95rem;
+    border: 2px solid var(--primary-color);
+    border-radius: 6px;
+    background: white;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(255, 184, 28, 0.25);
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.filter-buttons button,
+.filter-buttons a {
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.filter-buttons button {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+    color: white;
+}
+
+.filter-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 90, 90, 0.3);
+}
+
+.filter-buttons a {
+    background: transparent;
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+}
+
+.filter-buttons a:hover {
+    background: var(--secondary-color);
+    color: black;
 }
 
 /* =========================
@@ -27,7 +131,9 @@
 .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border-radius: 6px;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    background: var(--card-bg);
 }
 
 /* =========================
@@ -35,115 +141,417 @@
 ========================= */
 .league-table {
     width: 100%;
-    min-width: 720px;
+    min-width: 700px;
     border-collapse: collapse;
-    font-size: 14px;
-    background-color: #ffffff; /* keep table background white */
+    font-size: 0.95rem;
+    background-color: var(--card-bg);
+    margin: 0;
 }
 
 .league-table th,
 .league-table td {
-    border: 1px solid #ddd;
-    padding: 6px;
+    border: 1px solid #e9ecef;
+    padding: 1rem 0.75rem;
     text-align: center;
     white-space: nowrap;
+}
+
+.league-table th {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
 }
 
 /* =========================
    STICKY HEADER
 ========================= */
-.league-table thead th {
+.league-table thead {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+    color: white;
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: #c8e6c9; /* light green header for contrast */
+}
+
+.league-table thead th {
+    border: none;
+    color: white;
 }
 
 /* =========================
    TEAM COLUMN
 ========================= */
-.team-name {
+.league-table td:nth-child(2),
+.league-table th:nth-child(2) {
     text-align: left;
-    color: #3f51b5;
-    font-weight: 500;
+    padding-left: 1.5rem;
+}
+
+.team-name {
+    color: var(--primary-color);
+    font-weight: 700;
 }
 
 /* =========================
-   ROW COLORS
+   ROW COLORS & POSITIONS
 ========================= */
+.league-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.league-table tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.01);
+}
+
+/* Champion */
 .champion {
-    background-color: #c8f7c5;
+    background: linear-gradient(90deg, rgba(39, 174, 96, 0.1) 0%, rgba(39, 174, 96, 0.05) 100%);
+    border-left: 5px solid #27AE60;
 }
 
+.champion td:first-child::before {
+    content: '👑 ';
+    font-weight: 700;
+    color: #27AE60;
+}
+
+/* Top Positions */
 .top-five {
-    background-color: #fff3b0;
+    background: linear-gradient(90deg, rgba(52, 152, 219, 0.1) 0%, rgba(52, 152, 219, 0.05) 100%);
+    border-left: 4px solid #3498DB;
 }
 
+/* Relegation Zone */
 .relegation {
-    background-color: #f7c5c5;
+    background: linear-gradient(90deg, rgba(231, 76, 60, 0.1) 0%, rgba(231, 76, 60, 0.05) 100%);
+    border-left: 4px solid #E74C3C;
+}
+
+.relegation td:first-child::after {
+    content: ' ⚠';
+    font-weight: 700;
+    color: #E74C3C;
 }
 
 /* =========================
-   MOBILE OPTIMIZATION
+   STATISTICS STYLING
+========================= */
+.league-table td {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.league-table td strong {
+    color: var(--primary-color);
+    font-weight: 800;
+}
+
+/* Points column highlight */
+.league-table tbody td:last-child {
+    background: linear-gradient(135deg, rgba(255, 184, 28, 0.1) 0%, rgba(255, 184, 28, 0.05) 100%);
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+/* =========================
+   BACK BUTTON & TITLE
+========================= */
+.standings-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.back-btn-standings {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.back-btn-standings:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* =========================
+   EXPORT & DOWNLOAD SECTION
+========================= */
+.export-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 10px;
+    border-left: 4px solid var(--secondary-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #ff9800 100%);
+    border: none;
+    color: black;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 184, 28, 0.3);
+}
+
+.export-text {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* =========================
+   LEGEND/EXPLANATION
+========================= */
+.standings-legend {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--light-bg);
+    border-radius: 10px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.legend-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.legend-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 2px solid rgba(0,0,0,0.1);
+}
+
+.legend-champion {
+    background: linear-gradient(135deg, #27AE60 0%, #229954 100%);
+}
+
+.legend-qualified {
+    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+}
+
+.legend-relegation {
+    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: var(--card-bg);
+    border-radius: 10px;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.empty-state-text {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
 ========================= */
 @media (max-width: 768px) {
+    .league-title {
+        font-size: 1.8rem;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+
     .league-table {
-        font-size: 13px;
+        font-size: 0.85rem;
+    }
+
+    .league-table th,
+    .league-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .export-section {
+        flex-direction: column;
+    }
+
+    .legend-items {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 480px) {
-    .league-table {
-        font-size: 12px;
+    .league-header {
+        padding: 1.5rem 1rem;
     }
 
     .league-title {
-        font-size: 18px;
+        font-size: 1.5rem;
+    }
+
+    .league-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .league-table {
+        font-size: 0.8rem;
+        min-width: 600px;
+    }
+
+    .league-table th,
+    .league-table td {
+        padding: 0.5rem 0.25rem;
+    }
+
+    .league-table td:nth-child(2),
+    .league-table th:nth-child(2) {
+        padding-left: 0.75rem;
+    }
+
+    .standings-filters {
+        padding: 1rem;
+    }
+
+    .filter-buttons {
+        width: 100%;
+    }
+
+    .filter-buttons button,
+    .filter-buttons a {
+        flex: 1;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.8rem;
     }
 }
 </style>
 
+<!-- Back Button -->
+<a href="{% url 'home' %}" class="back-btn-standings">
+  <i class="fas fa-arrow-left"></i> Back to Home
+</a>
+
 <div class="league-container">
 
+    <!-- League Header -->
+    <div class="league-header">
+        <h2 class="league-title">
+            <i class="fas fa-table"></i> League Standings
+        </h2>
+        <p class="league-subtitle">
+            PVPSL{% if selected_year %} • {{ selected_year }} Season{% endif %}{% if computed_week %} • Week {{ computed_week }}{% endif %}
+        </p>
+    </div>
+
     <!-- Filters -->
-    <form method="get" style="margin-bottom:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-        <label style="margin-bottom:0;">Year:
-            <select name="year" class="form-select form-select-sm" style="display:inline-block; width:auto;">
-                <option value="">All</option>
-                {% for s in seasons %}
-                <option value="{{ s.year }}" {% if selected_year|stringformat:"s" == s.year|stringformat:"s" %}selected{% endif %}>{{ s.year }}</option>
-                {% endfor %}
-            </select>
-        </label>
+    <div class="standings-filters">
+        <form method="get" class="filter-group">
+            <label>
+                Season Year
+                <select name="year">
+                    <option value="">All Seasons</option>
+                    {% for s in seasons %}
+                    <option value="{{ s.year }}" {% if selected_year|stringformat:"s" == s.year|stringformat:"s" %}selected{% endif %}>
+                        {{ s.year }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
 
-        <label style="margin-bottom:0;">Scope:
-            <select name="scope" class="form-select form-select-sm" style="display:inline-block; width:auto;">
-                <option value="">Overall</option>
-                <option value="home" {% if selected_scope == 'home' %}selected{% endif %}>Home Only</option>
-                <option value="away" {% if selected_scope == 'away' %}selected{% endif %}>Away Only</option>
-            </select>
-        </label>
+            <label>
+                Match Scope
+                <select name="scope">
+                    <option value="">Overall</option>
+                    <option value="home" {% if selected_scope == 'home' %}selected{% endif %}>Home Matches Only</option>
+                    <option value="away" {% if selected_scope == 'away' %}selected{% endif %}>Away Matches Only</option>
+                </select>
+            </label>
 
-        <button type="submit" class="btn btn-sm btn-primary">Apply</button>
-        <a href="{% url 'league_standings' %}" class="btn btn-sm btn-link">Clear</a>
-    </form>
+            <div class="filter-buttons" style="margin-top: 1.85rem;">
+                <button type="submit">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+                <a href="{% url 'league_standings' %}">
+                    <i class="fas fa-redo"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
 
-    <div id="standingsExportArea" style="padding-top:0;">
-      <h2 class="league-title">PVPSL{% if selected_year %} {{ selected_year }}{% endif %}{% if computed_week %} WEEK {{ computed_week }}{% endif %}</h2>
-      <div class="table-wrapper" style="overflow-x:auto; margin-top:4px;">
+    <!-- Standings Table -->
+    <div class="table-wrapper">
         <table class="league-table">
             <thead>
                 <tr>
-                    <th>Pos</th>
-                    <th>Team</th>
+                    <th style="width: 50px;">Pos</th>
+                    <th style="flex: 1; min-width: 150px;">Team Name</th>
                     <th>P</th>
-                    <th>W</th>
-                    <th>D</th>
-                    <th>L</th>
-                    <th>GF</th>
-                    <th>GA</th>
-                    <th>GD</th>
-                    <th>Pts</th>
+                    <th><span title="Wins">W</span></th>
+                    <th><span title="Draws">D</span></th>
+                    <th><span title="Losses">L</span></th>
+                    <th><span title="Goals For">GF</span></th>
+                    <th><span title="Goals Against">GA</span></th>
+                    <th><span title="Goal Difference">GD</span></th>
+                    <th><span title="Points">Pts</span></th>
                 </tr>
             </thead>
 
@@ -163,17 +571,45 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="10">No matches played yet.</td>
+                    <td colspan="10">
+                        <div class="empty-state" style="padding: 2rem 1rem; margin: 0;">
+                            <i class="fas fa-inbox" style="font-size: 2rem; color: var(--secondary-color);"></i>
+                            <p style="margin-top: 0.5rem; color: var(--text-light);">No matches have been played yet.</p>
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
+    <!-- Standings Legend -->
+    <div class="standings-legend">
+        <div class="legend-title">
+            <i class="fas fa-info-circle"></i> Table Position Guide
+        </div>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-color legend-champion"></div>
+                <span>👑 Champion Position</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color legend-qualified"></div>
+                <span>Qualified / Top Positions</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color legend-relegation"></div>
+                <span>⚠ Relegation Zone</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Download button -->
-    <div style="margin-top:1.5rem; display:flex; gap:1rem; align-items:center;">
-        <button id="downloadTable" class="btn btn-primary btn-sm">Download table as PNG</button>
-        <p class="text-muted small mb-0">Click to save the standings table as an image.</p>
+    <div class="export-section">
+        <button id="downloadTable" class="download-btn">
+            <i class="fas fa-download"></i> Download as PNG
+        </button>
+        <p class="export-text">Capture the standings table as an image for sharing or documentation.</p>
     </div>
 
 </div>
@@ -186,13 +622,13 @@
     if(btn){
       btn.addEventListener('click', function(){
           // capture heading + table together
-          const el = document.getElementById('standingsExportArea');
+          const el = document.querySelector('.table-wrapper');
           if(!el) return;
           html2canvas(el, {useCORS:true, scale:2}).then(canvas => {
               const link = document.createElement('a');
               const yearPart = ("{{ selected_year }}") ? "_{{ selected_year }}" : "";
               const weekPart = ("{{ computed_week }}") ? "_W" + "{{ computed_week }}" : "";
-              link.download = 'PVPSL' + yearPart + weekPart + '.png';
+              link.download = 'PVPSL_Standings' + yearPart + weekPart + '.png';
               link.href = canvas.toDataURL('image/png');
               document.body.appendChild(link);
               link.click();

@@ -14,5 +14,6 @@ urlpatterns = [
     path('top-scorers/', views.top_scorers, name='top_scorers'),
     # Add your new discipline URL
     path('discipline/', views.get_player_discipline, name='player_discipline'),
-
+    path('venues/', views.venues, name='venues'),
+    path('venues/<int:venue_id>/', views.venue_detail, name='venue_detail'),
 ]

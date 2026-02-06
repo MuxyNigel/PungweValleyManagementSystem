@@ -5,47 +5,549 @@
 {% block title %}Home - Pungwe Valley Football League{% endblock %}
 
 {% block content %}
-<div class="home-container text-center d-flex align-items-center justify-content-center flex-column" style="background-image: url('{% static 'images/pungwevalleyimage.jpeg' %}'); background-size: cover; background-position: center; min-height: 100vh;">
-  <h1 class="display-3 fw-bold mb-4 text-white">Welcome to Pungwe Valley Professional Football League</h1>
-  <h2 class="display-4 fw-bold mb-4 text-white">Experience the thrill of local football!</h2>
-  <a href="/matches/" class="btn btn-lg btn-primary mb-5">View Upcoming Matches</a>
+<style>
+  /* Hero Section */
+  .hero-section {
+    background: linear-gradient(135deg, rgba(30, 90, 90, 0.9) 0%, rgba(15, 28, 46, 0.9) 100%), 
+                url('{% static 'images/pungwevalleyimage.jpeg' %}');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    padding: 6rem 2rem;
+    text-align: center;
+    border-radius: 12px;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(30, 90, 90, 0.85) 0%, rgba(15, 28, 46, 0.85) 100%);
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: -1px;
+  }
+
+  .hero-subtitle {
+    font-size: 1.6rem;
+    margin-bottom: 2rem;
+    color: var(--secondary-color);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    font-weight: 700;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-cta-primary {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #ff9800 100%);
+    border: none;
+    color: black;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.9rem 2rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-cta-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 184, 28, 0.3);
+    color: black;
+  }
+
+  .btn-cta-secondary {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.8rem 1.8rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-cta-secondary:hover {
+    background: white;
+    color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+  }
+
+  /* Section Title */
+  .section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    padding-bottom: 1.5rem;
+  }
+
+  .section-title h2 {
+    color: var(--primary-color);
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    border: none;
+    padding: 0;
+  }
+
+  .section-title p {
+    color: var(--text-light);
+    font-size: 1.05rem;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--secondary-color);
+    border-radius: 2px;
+  }
+
+  /* Feature Cards Grid */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .feature-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border-top: 4px solid var(--primary-color);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(30, 90, 90, 0.2);
+    border-top-color: var(--secondary-color);
+  }
+
+  /* Unique colors for each feature card */
+  .feature-card:nth-child(1) { border-top-color: #E74C3C; }
+  .feature-card:nth-child(1) .feature-icon { background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); }
+
+  .feature-card:nth-child(2) { border-top-color: #3498DB; }
+  .feature-card:nth-child(2) .feature-icon { background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); }
+
+  .feature-card:nth-child(3) { border-top-color: #F39C12; }
+  .feature-card:nth-child(3) .feature-icon { background: linear-gradient(135deg, #F39C12 0%, #D68910 100%); }
+
+  .feature-card:nth-child(4) { border-top-color: #27AE60; }
+  .feature-card:nth-child(4) .feature-icon { background: linear-gradient(135deg, #27AE60 0%, #229954 100%); }
+
+  .feature-card:nth-child(5) { border-top-color: #8E44AD; }
+  .feature-card:nth-child(5) .feature-icon { background: linear-gradient(135deg, #8E44AD 0%, #7D3C98 100%); }
+
+  .feature-card:nth-child(6) { border-top-color: #1ABC9C; }
+  .feature-card:nth-child(6) .feature-icon { background: linear-gradient(135deg, #1ABC9C 0%, #16A085 100%); }
+
+  .feature-icon {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+    color: white;
+    width: 100%;
+    padding: 2rem;
+    text-align: center;
+    font-size: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 184, 28, 0.1);
+    border-radius: 50%;
+  }
+
+  .feature-card-body {
+    padding: 1.8rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .feature-card-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+
+  .feature-card-text {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .
+
+  /* Link button colors match card colors */
+  .feature-card:nth-child(1) .feature-card-link { background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); }
+  .feature-card:nth-child(1) .feature-card-link:hover { box-shadow: 0 6px 16px rgba(231, 76, 60, 0.3); }
+
+  .feature-card:nth-child(2) .feature-card-link { background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); }
+  .feature-card:nth-child(2) .feature-card-link:hover { box-shadow: 0 6px 16px rgba(52, 152, 219, 0.3); }
+
+  .feature-card:nth-child(3) .feature-card-link { background: linear-gradient(135deg, #F39C12 0%, #D68910 100%); }
+  .feature-card:nth-child(3) .feature-card-link:hover { box-shadow: 0 6px 16px rgba(243, 156, 18, 0.3); }
+
+  .feature-card:nth-child(4) .feature-card-link { background: linear-gradient(135deg, #27AE60 0%, #229954 100%); }
+  .feature-card:nth-child(4) .feature-card-link:hover { box-shadow: 0 6px 16px rgba(39, 174, 96, 0.3); }
+
+  .feature-card:nth-child(5) .feature-card-link { background: linear-gradient(135deg, #8E44AD 0%, #7D3C98 100%); }
+  .feature-card:nth-child(5) .feature-card-link:hover { box-shadow: 0 6px 16px rgba(142, 68, 173, 0.3); }
+
+  .feature-card:nth-child(6) .feature-card-link { background: linear-gradient(135deg, #1ABC9C 0%, #16A085 100%); }
+  .feature-card:nth-child(6) .feature-card-link:hover { box-shadow: 0 6px 16px rgba(26, 188, 156, 0.3); }feature-card-link {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .feature-card-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 90, 90, 0.3);
+    color: white;
+  }
+
+  /* Secondary Features */
+  .secondary-features {
+    background: linear-gradient(135deg, #f8f9fa 0%, #f0f8f8 100%);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    margin-top: 3rem;
+  }
+
+  .secondary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .secondary-item {
+    text-align: center;
+  }
+
+  .secondary-item i {
+    color: var(--secondary-color);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .secondary-item h4 {
+    color: var(--primary-color);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .secondary-item p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+  }
+
+  /* Stats Section */
+  .stats-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2a7a7a 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-top: 3rem;
+    text-align: center;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .stat-item h3 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-item p {
+    color: #e0e0e0;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+    }
+
+    .hero-section {
+      padding: 4rem 1.5rem;
+      min-height: 350px;
+    }
+
+    .section-title h2 {
+      font-size: 1.8rem;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+    }
+
+    .btn-cta-primary,
+    .btn-cta-secondary {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-section {
+      padding: 3rem 1rem;
+      min-height: 300px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-title {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title h2 {
+      font-size: 1.5rem;
+    }
+
+    .feature-icon {
+      padding: 1.5rem;
+      font-size: 2.5rem;
+    }
+
+    .feature-card-body {
+      padding: 1.2rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .stat-item h3 {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <i class="fas fa-shield-alt"></i> Pungwe Valley Football League
+    </h1>
+    <p class="hero-subtitle">Experience the Thrill of Professional Football</p>
+    <div class="cta-buttons">
+      <a href="{% url 'match_list' %}" class="btn-cta-primary">
+        <i class="fas fa-futbol"></i> View Matches
+      </a>
+      <a href="{% url 'league_standings' %}" class="btn-cta-secondary">
+        <i class="fas fa-list"></i> See Standings
+      </a>
+    </div>
+  </div>
 </div>
 
-<!-- Additional content sections -->
-<h1 class="mb-4 mt-5 text-center">Welcome to the Football Portal</h1>
-<p class="text-center mb-4">This is the home page with latest news, history, or introductory info.</p>
-<div class="container mb-5">
-  <div class="row">
-    <!-- Upcoming Fixtures Card -->
-    <div class="col-md-4 mb-3">
-      <div class="card h-100">
-        <div class="card-body d-flex flex-column justify-content-between">
-          <h5 class="card-title">Upcoming Fixtures</h5>
-          <p class="card-text">Check out the upcoming matches and schedules.</p>
-          <a href="/matches/" class="btn btn-primary mt-auto">View Fixtures</a>
-        </div>
+<!-- Main Features Section -->
+<div class="container">
+  <div class="section-title">
+    <h2>League Features</h2>
+    <p>Everything you need to manage and follow professional football</p>
+  </div>
+
+  <div class="features-grid">
+    <!-- Matches Card -->
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-futbol"></i>
+      </div>
+      <div class="feature-card-body">
+        <h3 class="feature-card-title">Upcoming Matches</h3>
+        <p class="feature-card-text">Check out all upcoming fixtures, schedules, and match details. Stay updated with live match information and results.</p>
+        <a href="{% url 'match_list' %}" class="feature-card-link">
+          <i class="fas fa-arrow-right"></i> View Fixtures
+        </a>
       </div>
     </div>
+
     <!-- Standings Card -->
-    <div class="col-md-4 mb-3">
-      <div class="card h-100">
-        <div class="card-body d-flex flex-column justify-content-between">
-          <h5 class="card-title">Standings</h5>
-          <p class="card-text">See the current league standings.</p>
-          <a href="/standings/" class="btn btn-primary mt-auto">View Standings</a>
-        </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-list"></i>
+      </div>
+      <div class="feature-card-body">
+        <h3 class="feature-card-title">League Standings</h3>
+        <p class="feature-card-text">Track the current league standings, team positions, and statistics. See how your team is performing throughout the season.</p>
+        <a href="{% url 'league_standings' %}" class="feature-card-link">
+          <i class="fas fa-arrow-right"></i> View Standings
+        </a>
       </div>
     </div>
+
     <!-- Top Scorers Card -->
-    <div class="col-md-4 mb-3">
-      <div class="card h-100">
-        <div class="card-body d-flex flex-column justify-content-between">
-          <h5 class="card-title">Top Scorers</h5>
-          <p class="card-text">Find out who are the top goal scorers.</p>
-          <a href="/top-scorers/" class="btn btn-primary mt-auto">View Top Scorers</a>
-        </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <div class="feature-card-body">
+        <h3 class="feature-card-title">Top Goal Scorers</h3>
+        <p class="feature-card-text">Follow the top goal scorers in the league. See who's leading the race for the golden boot and scoring statistics.</p>
+        <a href="{% url 'top_scorers' %}" class="feature-card-link">
+          <i class="fas fa-arrow-right"></i> View Scorers
+        </a>
+      </div>
+    </div>
+
+    <!-- Referees Card -->
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="feature-card-body">
+        <h3 class="feature-card-title">Officials & Referees</h3>
+        <p class="feature-card-text">View all league referees and officials. Check their match assignments, communication details, and performance statistics.</p>
+        <a href="{% url 'referees' %}" class="feature-card-link">
+          <i class="fas fa-arrow-right"></i> View Referees
+        </a>
+      </div>
+    </div>
+
+    <!-- Discipline Card -->
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-exclamation-circle"></i>
+      </div>
+      <div class="feature-card-body">
+        <h3 class="feature-card-title">Player Discipline</h3>
+        <p class="feature-card-text">Track player suspensions, yellow and red cards, and disciplinary actions. Monitor player conduct throughout the season.</p>
+        <a href="{% url 'player_discipline' %}" class="feature-card-link">
+          <i class="fas fa-arrow-right"></i> View Discipline
+        </a>
+      </div>
+    </div>
+
+    <!-- Venues Card -->
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-map-marker-alt"></i>
+      </div>
+      <div class="feature-card-body">
+        <h3 class="feature-card-title">Venues & Facilities</h3>
+        <p class="feature-card-text">Explore all league venues and their details. View match history, location information, and facility management.</p>
+        <a href="{% url 'venues' %}" class="feature-card-link">
+          <i class="fas fa-arrow-right"></i> View Venues
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Features -->
+  <div class="secondary-features">
+    <h3 style="text-align: center; color: var(--primary-color); margin-bottom: 2rem; font-weight: 800;">Why Choose Our Platform</h3>
+    <div class="secondary-grid">
+      <div class="secondary-item">
+        <i class="fas fa-tachometer-alt"></i>
+        <h4>Real-Time Updates</h4>
+        <p>Get instant updates on all matches and league information</p>
+      </div>
+      <div class="secondary-item">
+        <i class="fas fa-chart-line"></i>
+        <h4>Detailed Analytics</h4>
+        <p>Comprehensive statistics and performance metrics</p>
+      </div>
+      <div class="secondary-item">
+        <i class="fas fa-mobile-alt"></i>
+        <h4>Mobile Friendly</h4>
+        <p>Access all features on any device, anywhere, anytime</p>
+      </div>
+      <div class="secondary-item">
+        <i class="fas fa-lock"></i>
+        <h4>Secure Platform</h4>
+        <p>Your data is safe and protected with us</p>
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}

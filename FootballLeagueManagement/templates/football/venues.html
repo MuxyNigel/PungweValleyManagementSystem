@@ -1,0 +1,431 @@
+{% extends 'football/base.html' %}
+{% load static %}
+
+{% block title %}Venues - Pungwe Valley Professional Football League{% endblock %}
+
+{% block content %}
+<style>
+  .venue-filter-section {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-left: 4px solid var(--secondary-color);
+  }
+
+  .venue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .venue-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .venue-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(30, 90, 90, 0.2);
+    border-top: 3px solid var(--secondary-color);
+  }
+
+  .venue-card-header {
+    background: linear-gradient(135deg, #1E5A5A 0%, #2a7a7a 100%);
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .venue-card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 184, 28, 0.15);
+    border-radius: 0 0 0 100%;
+  }
+
+  .venue-icon {
+    font-size: 2.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .venue-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .venue-location {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    margin: 0.5rem 0 0 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .venue-card-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+  }
+
+  .venue-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .venue-stat:last-child {
+    border-bottom: none;
+  }
+
+  .venue-stat-label {
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .venue-stat-value {
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: 1.3rem;
+  }
+
+  .badge-matches {
+    background: linear-gradient(135deg, #1E5A5A 0%, #2a7a7a 100%);
+    color: white;
+  }
+
+  .badge-completed {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+  }
+
+  .venue-card-footer {
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn-view-venue {
+    background: linear-gradient(135deg, #1E5A5A 0%, #2a7a7a 100%);
+    border: none;
+    color: white;
+    width: 100%;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.75rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-view-venue:hover {
+    background: linear-gradient(135deg, #0d3a3a 0%, #1e5a5a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 90, 90, 0.3);
+    color: white;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+  }
+
+  .empty-state-text {
+    color: var(--text-light);
+    font-size: 1.1rem;
+  }
+
+  .stats-overview {
+    background: linear-gradient(135deg, #1E5A5A 0%, #2a7a7a 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(30, 90, 90, 0.2);
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .stat-box-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-box-label {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #e0e0e0;
+  }
+
+  .search-highlight {
+    background: linear-gradient(to right, transparent, rgba(255, 184, 28, 0.2), transparent);
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .venue-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .stats-overview {
+      padding: 1.5rem;
+    }
+
+    .stat-box {
+      padding: 1rem;
+    }
+
+    .venue-card-header {
+      padding: 1.25rem;
+    }
+
+    .venue-name {
+      font-size: 1.2rem;
+    }
+  }
+
+  .filter-form {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-form input {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .filter-form button {
+    white-space: nowrap;
+  }
+
+  .clear-filter-btn {
+    background: transparent;
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+  }
+
+  .clear-filter-btn:hover {
+    background: var(--secondary-color);
+    color: var(--dark-bg);
+  }
+
+  .back-btn {
+    margin-bottom: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .back-btn:hover {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  @media (max-width: 480px) {
+    .filter-form {
+      flex-direction: column;
+    }
+
+    .filter-form input {
+      min-width: 100%;
+    }
+
+    .back-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container">
+    <h1><i class="fas fa-map-marker-alt"></i> Football Venues</h1>
+    <p>Manage and view all league venues and facilities</p>
+  </div>
+</div>
+
+<div class="container my-4">
+  <!-- Back Button -->
+  <a href="{% url 'home' %}" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Back to Home
+  </a>
+
+  <!-- Stats Overview -->
+  <div class="stats-overview">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="stat-box">
+          <div class="stat-box-number">{{ total_venues }}</div>
+          <div class="stat-box-label">Total Venues</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="stat-box">
+          <div class="stat-box-number">
+            {% with total_matches=venues_data|length %}
+              {% if total_matches > 0 %}
+                {{ venues_data|length }}
+              {% else %}
+                0
+              {% endif %}
+            {% endwith %}
+          </div>
+          <div class="stat-box-label">Venues Listed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="venue-filter-section">
+    <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-search"></i> Search Venues</h3>
+    <form method="GET" class="filter-form">
+      <input 
+        type="text" 
+        name="search" 
+        class="form-control" 
+        placeholder="Search by venue name or location..." 
+        value="{{ search_query }}"
+        style="padding: 0.7rem 0.95rem; border: 2px solid var(--primary-color); border-radius: 6px;"
+      >
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-search"></i> Search
+      </button>
+      {% if search_query %}
+        <a href="{% url 'venues' %}" class="btn clear-filter-btn">
+          <i class="fas fa-times"></i> Clear
+        </a>
+      {% endif %}
+    </form>
+
+    {% if search_query %}
+      <div class="search-highlight mt-3">
+        <small style="color: var(--text-light);">
+          <i class="fas fa-info-circle"></i> Showing results for: <strong style="color: var(--primary-color);">{{ search_query }}</strong>
+        </small>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Venues Grid -->
+  {% if venues_data %}
+    <div class="venue-grid">
+      {% for item in venues_data %}
+      <div class="venue-card">
+        <!-- Card Header -->
+        <div class="venue-card-header">
+          <div class="venue-icon">
+            <i class="fas fa-stadium"></i>
+          </div>
+          <h2 class="venue-name">{{ item.venue.name }}</h2>
+          <p class="venue-location">
+            <i class="fas fa-map-pin"></i> {{ item.venue.location }}
+          </p>
+        </div>
+
+        <!-- Card Body -->
+        <div class="venue-card-body">
+          <div class="venue-stat">
+            <span class="venue-stat-label">
+              <i class="fas fa-futbol"></i> Total Matches
+            </span>
+            <span class="badge badge-matches">{{ item.matches_count }}</span>
+          </div>
+          <div class="venue-stat">
+            <span class="venue-stat-label">
+              <i class="fas fa-check-circle"></i> Completed
+            </span>
+            <span class="badge badge-completed">{{ item.completed_matches }}</span>
+          </div>
+          <div class="venue-stat">
+            <span class="venue-stat-label">
+              <i class="fas fa-hourglass-start"></i> Pending
+            </span>
+            <span class="badge" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white;">
+              {{ item.matches_count|add:item.completed_matches|stringformat:"-d" }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="venue-card-footer">
+          <a href="{% url 'venue_detail' item.venue.id %}" class="btn-view-venue">
+            <i class="fas fa-arrow-right"></i> View Details
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Empty State -->
+    <div class="card empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-inbox"></i>
+      </div>
+      <h3 class="text-primary" style="border: none; padding: 0; margin: 1rem 0;">No Venues Found</h3>
+      <p class="empty-state-text">
+        {% if search_query %}
+          No venues match your search for "<strong>{{ search_query }}</strong>". Please try a different search term.
+        {% else %}
+          No venues have been added to the system yet.
+        {% endif %}
+      </p>
+      {% if search_query %}
+        <a href="{% url 'venues' %}" class="btn btn-primary mt-3">
+          <i class="fas fa-redo"></i> View All Venues
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

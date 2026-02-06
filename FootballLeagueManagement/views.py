@@ -13,6 +13,7 @@ from .models import (
     Player,
     Season,
     Referee,
+    Venue,
 )
 
 
@@ -472,3 +473,74 @@ def get_player_discipline(request):
     # Pass this to template
     seasons = Season.objects.order_by('-year')
     return render(request, 'football/discipline.html', {'players': player_discipline_info, 'seasons': seasons, 'selected_season': season})
+
+# -------------------------
+# Venues list and detail view
+# -------------------------
+
+def venues(request):
+    """Display all venues with optional filtering capabilities"""
+    search_query = request.GET.get('search', '').strip()
+    
+    # Base queryset
+    venues_list = Venue.objects.all().order_by('name')
+    
+    # Apply search filter
+    if search_query:
+        venues_list = venues_list.filter(
+            Q(name__icontains=search_query) | Q(location__icontains=search_query)
+        )
+    
+    # Get venues with match statistics
+    venues_data = []
+    for venue in venues_list:
+        matches_count = Match.objects.filter(venue=venue).count()
+        completed_matches = Match.objects.filter(venue=venue, status='Completed').count()
+        
+        venues_data.append({
+            'venue': venue,
+            'matches_count': matches_count,
+            'completed_matches': completed_matches,
+        })
+    
+    return render(request, 'football/venues.html', {
+        'venues_data': venues_data,
+        'search_query': search_query,
+        'total_venues': Venue.objects.count(),
+    })
+
+
+def venue_detail(request, venue_id):
+    """Display detailed information about a specific venue"""
+    venue = get_object_or_404(Venue, id=venue_id)
+    
+    # Get all matches at this venue
+    matches = Match.objects.filter(venue=venue).select_related(
+        'home_team', 'away_team'
+    ).order_by('-date')
+    
+    # Categorize matches
+    completed = matches.filter(status='Completed')
+    scheduled = matches.filter(status='Scheduled')
+    cancelled = matches.filter(status='Cancelled')
+    
+    # Stats
+    total_matches = matches.count()
+    total_goals = 0
+    total_attendance = 0
+    
+    for match in completed:
+        if match.home_team_score is not None and match.away_team_score is not None:
+            total_goals += match.home_team_score + match.away_team_score
+    
+    return render(request, 'football/venue_detail.html', {
+        'venue': venue,
+        'matches': matches,
+        'completed': completed,
+        'scheduled': scheduled,
+        'cancelled': cancelled,
+        'stats': {
+            'total_matches': total_matches,
+            'total_goals': total_goals,
+        }
+    })
