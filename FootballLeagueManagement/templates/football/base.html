@@ -41,7 +41,7 @@
       color: var(--text-dark);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
-      overflow-y: overlay;
+      overflow-y: auto;
     }
 
     /* Custom scrollbar styling */
@@ -358,6 +358,9 @@
         font-size: 1.3rem;
         margin-bottom: 1rem;
       }
+      .main-content {
+        padding-bottom: 180px;
+      }
 
       h2 {
         font-size: 1.1rem;
@@ -431,6 +434,11 @@
 
     .content-wrapper {
       animation: fadeIn 0.5s ease;
+    }
+
+    /* Ensure main content has enough bottom padding so footer doesn't cover actionable elements */
+    .main-content {
+      padding-bottom: 220px; /* space for fixed footer and extra actions */
     }
 
     /* ==================== HERO/PAGE HEADER ==================== */
@@ -599,9 +607,9 @@
   </nav>
 
   <!-- Main Content -->
-  <div class="container my-4">
+  <main class="main-content container my-4">
     {% block content %}{% endblock %}
-  </div>
+  </main>
 
   <!-- Footer (fixed and responsive contact) -->
   <footer class="text-white py-3">
