@@ -27,7 +27,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-gscoopwuha6$l=#*18o8b
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
-    'pungwevalleyleaguemanagement.onrender.com'
+    'pungwevalleyleaguemanagement.onrender.com',
+    '127.0.0.1',
+    'localhost'
 ]
 # Application definition
 
