@@ -160,3 +160,6 @@ STATICFILES_DIRS = [p for p in _possible_static_dirs if p.exists()]
 
 # WhiteNoise compression and caching
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"

@@ -56,7 +56,17 @@ class Player(models.Model):
     national_id = models.CharField(max_length=50, null=True, blank=True)
     jersey_number = models.PositiveIntegerField(null=True, blank=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players')
-    position = models.CharField(max_length=50)
+    POSITION_CHOICES = [
+        ('GOALKEEPER (GK)', 'GOALKEEPER (GK)'),
+        ('Centre-Back (CB)', 'Centre-Back (CB)'),
+        ('Full-Back (LB / RB)', 'Full-Back (LB / RB)'),
+        ('Defensive Midfielder (CDM)', 'Defensive Midfielder (CDM)'),
+        ('Central Midfielder (CM)', 'Central Midfielder (CM)'),
+        ('Attacking Midfielder (CAM)', 'Attacking Midfielder (CAM)'),
+        ('Winger (LM / RM / LW / RW)', 'Winger (LM / RM / LW / RW)'),
+        ('Centre Forward (CF / ST)', 'Centre Forward (CF / ST)'),
+    ]
+    position = models.CharField(max_length=50, choices=POSITION_CHOICES)
     goals = models.PositiveIntegerField(default=0)  # New field for goals scored
     assists = models.PositiveIntegerField(default=0)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, null=True, blank=True)
