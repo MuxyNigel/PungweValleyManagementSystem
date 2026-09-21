@@ -316,8 +316,37 @@ class Goal(models.Model):
     assist = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, blank=True, related_name='goals_assisted')
     minute = models.PositiveIntegerField()
 
+    is_own_goal = models.BooleanField(default=False)
+
     def __str__(self):
         return f"Goal by {self.scorer.name} at {self.minute}'"
 
     class Meta:
         ordering = ['minute']
+
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Goal)
+def update_player_stats_on_save(sender, instance, **kwargs):
+    if not instance.is_own_goal:
+        scorer = instance.scorer
+        scorer.goals = Goal.objects.filter(scorer=scorer, is_own_goal=False).count()
+        scorer.save(update_fields=['goals'])
+    
+    if instance.assist:
+        assist = instance.assist
+        assist.assists = Goal.objects.filter(assist=assist).count()
+        assist.save(update_fields=['assists'])
+
+@receiver(post_delete, sender=Goal)
+def update_player_stats_on_delete(sender, instance, **kwargs):
+    if not instance.is_own_goal:
+        scorer = instance.scorer
+        scorer.goals = Goal.objects.filter(scorer=scorer, is_own_goal=False).count()
+        scorer.save(update_fields=['goals'])
+    
+    if instance.assist:
+        assist = instance.assist
+        assist.assists = Goal.objects.filter(assist=assist).count()
+        assist.save(update_fields=['assists'])

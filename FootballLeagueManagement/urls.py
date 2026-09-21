@@ -12,6 +12,7 @@ urlpatterns = [
     path('players/<int:player_id>/', views.player_profile, name='player_profile'),
     path('referees/', views.referees, name='referees'),
     path('referees/<int:ref_id>/', views.referee_detail, name='referee_detail'),
+    path('api/admin-match-players/', views.admin_match_players_api, name='admin_match_players_api'),
     path('top-scorers/', views.top_scorers, name='top_scorers'),
     # Add your new discipline URL
     path('discipline/', views.get_player_discipline, name='player_discipline'),

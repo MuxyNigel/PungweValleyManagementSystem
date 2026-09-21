@@ -58,6 +58,9 @@ class MatchAdmin(admin.ModelAdmin):
     list_filter = ('status', 'date')
     search_fields = ('home_team__name', 'away_team__name')
     inlines = [MatchRefInline, GoalInline, CardInline]
+    
+    class Media:
+        js = ('js/match_admin.js',)
 
 # Admin for MatchRef
 @admin.register(MatchRef)

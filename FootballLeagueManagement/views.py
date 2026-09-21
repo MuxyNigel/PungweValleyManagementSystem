@@ -264,6 +264,24 @@ def team_search(request):
         results = [{'id': t.id, 'name': t.name} for t in qs]
     return JsonResponse(results, safe=False)
 
+@require_GET
+def admin_match_players_api(request):
+    home_team_id = request.GET.get('home_team_id')
+    away_team_id = request.GET.get('away_team_id')
+
+    home_players = []
+    away_players = []
+
+    if home_team_id:
+        home_players = list(Player.objects.filter(team_id=home_team_id).values('id', 'name', 'team_id'))
+    if away_team_id:
+        away_players = list(Player.objects.filter(team_id=away_team_id).values('id', 'name', 'team_id'))
+
+    return JsonResponse({
+        'home_players': home_players,
+        'away_players': away_players,
+    })
+
 
 # -------------------------
 # Team profile view
