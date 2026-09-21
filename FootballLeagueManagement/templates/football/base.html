@@ -566,9 +566,9 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
-        <img src="{% static 'images/pvpsl_logo.png' %}" alt="PVPSL Logo" id="pvpslLogoImg" onerror="this.style.display='none'; document.getElementById('pvpslFallbackIcon').style.display='inline-block';" style="height: 38px; width: auto; max-width: 120px; object-fit: contain;">
+        <img src="{% static 'images/pvpsl_logo.png.jpg' %}" alt="PVPSL Logo" id="pvpslLogoImg" onerror="this.src='{% static 'images/pvpsl_logo.png' %}'; this.onerror=function(){ this.style.display='none'; document.getElementById('pvpslFallbackIcon').style.display='inline-block'; };" style="height: 42px; width: auto; max-width: 130px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
         <i id="pvpslFallbackIcon" class="fas fa-shield-alt" style="display: none;"></i>
-        <span>PVPSL</span>
+        <span class="fw-bold" style="letter-spacing: 1px; color: var(--secondary-color);">PVPSL</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
