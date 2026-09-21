@@ -1,0 +1,7 @@
+Place your official PVPSL logo image file in this exact directory:
+File Path: FootballLeagueManagement/static/images/pvpsl_logo.png
+Or: static/images/pvpsl_logo.png
+
+File Name: pvpsl_logo.png (or .jpg / .jpeg)
+
+Once added, the official PVPSL logo will automatically display on the top-left of the platform navbar!

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -564,8 +565,10 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="{% url 'home' %}">
-        <i class="fas fa-shield-alt"></i> PVPSL
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+        <img src="{% static 'images/pvpsl_logo.png' %}" alt="PVPSL Logo" id="pvpslLogoImg" onerror="this.style.display='none'; document.getElementById('pvpslFallbackIcon').style.display='inline-block';" style="height: 38px; width: auto; max-width: 120px; object-fit: contain;">
+        <i id="pvpslFallbackIcon" class="fas fa-shield-alt" style="display: none;"></i>
+        <span>PVPSL</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -622,6 +625,9 @@
               <a href="{% url 'contact' %}">
                 <i class="fas fa-headset"></i> Contact Us
               </a>
+              <a href="{% url 'terms' %}">
+                <i class="fas fa-file-contract"></i> Terms & Conditions
+              </a>
             </div>
           </li>
         </ul>
@@ -640,16 +646,43 @@
       <div class="small">
         &copy; 2026 Pungwe Valley Professional Soccer League. All rights reserved.
       </div>
-      <div class="mt-2 d-md-none">
-        <a href="{% url 'contact' %}" class="btn btn-sm btn-outline-light">
-          <i class="fas fa-phone"></i> Contact Secretariat
+      <div class="mt-2">
+        <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#devContactModal">
+          <i class="fas fa-code me-1"></i> Developer Contacts
+        </button>
+        <a href="{% url 'contact' %}" class="btn btn-sm btn-outline-light ms-2">
+          <i class="fas fa-phone me-1"></i> Contact Office
         </a>
-      </div>
-      <div class="mt-2 d-none d-md-block small" style="color: #c0c0c0;">
-        <strong>PVPSL Admin</strong>: Nigel Mubure • Call: <a href="tel:+263784264672">+263784264672</a> • WhatsApp: <a href="https://wa.me/263789727983" target="_blank">+263789727983</a> • Email: <a href="mailto:nimubure21@gmail.com">nimubure21@gmail.com</a> | <a href="{% url 'contact' %}" class="text-warning">Contact Office</a>
+        <a href="{% url 'terms' %}" class="btn btn-sm btn-outline-info ms-2">
+          <i class="fas fa-file-contract me-1"></i> Terms & Conditions
+        </a>
       </div>
     </div>
   </footer>
+
+  <!-- Developer Contact Modal -->
+  <div class="modal fade" id="devContactModal" tabindex="-1" aria-labelledby="devContactModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="color: #1a1a1a; text-align: left;">
+        <div class="modal-header" style="background: var(--primary-color); color: white;">
+          <h5 class="modal-title" id="devContactModalLabel" style="color: #ffffff !important;"><i class="fas fa-laptop-code me-2"></i> Developer & Admin Contacts</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h5 class="fw-bold text-primary mb-1">Nigel Mubure</h5>
+          <p class="text-muted small mb-3">PVPSL Developer & League Administrator</p>
+          <ul class="list-unstyled mb-0" style="font-size: 0.95rem;">
+            <li class="mb-2"><i class="fas fa-phone text-primary me-2"></i> <strong>Call:</strong> <a href="tel:+263784264672">+263 784 264 672</a></li>
+            <li class="mb-2"><i class="fab fa-whatsapp text-success me-2"></i> <strong>WhatsApp:</strong> <a href="https://wa.me/263789727983" target="_blank">+263 789 727 983</a></li>
+            <li class="mb-2"><i class="fas fa-envelope text-warning me-2"></i> <strong>Email:</strong> <a href="mailto:nimubure21@gmail.com">nimubure21@gmail.com</a></li>
+          </ul>
+        </div>
+        <div class="modal-footer" style="background: #f8f9fa;">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -721,6 +754,48 @@
       });
     }
   })();
+
+  // Mandatory Terms & Conditions Popup
+  (function(){
+    if(!localStorage.getItem('pvpsl_terms_agreed')){
+      const termsModalEl = document.getElementById('termsPopModal');
+      if(termsModalEl){
+        setTimeout(function(){
+          const termsModal = new bootstrap.Modal(termsModalEl);
+          termsModal.show();
+          document.getElementById('agreeTermsPopBtn')?.addEventListener('click', function(){
+            localStorage.setItem('pvpsl_terms_agreed', 'true');
+            termsModal.hide();
+          });
+        }, 500);
+      }
+    }
+  })();
   </script>
+
+  <!-- Mandatory Terms & Conditions Acceptance Modal -->
+  <div class="modal fade" id="termsPopModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="termsPopModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="color: #1a1a1a; text-align: left;">
+        <div class="modal-header" style="background: var(--primary-color); color: white;">
+          <h5 class="modal-title" id="termsPopModalLabel" style="color: #ffffff !important;"><i class="fas fa-file-contract me-2"></i> Welcome to PVPSL - Terms & Conditions</h5>
+        </div>
+        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+          <p class="fw-bold text-primary">Before exploring the Pungwe Valley Professional Soccer League (PVPSL) platform, please read and agree to our Terms and Conditions.</p>
+          <ul class="small text-muted" style="line-height: 1.6;">
+            <li><strong>Fair Play & Governance:</strong> All match schedules, statistics, card suspensions, and standings are governed by official PVPSL rules.</li>
+            <li><strong>Intellectual Property:</strong> Logos, photos, team data, and player profiles belong to PVPSL and member clubs.</li>
+            <li><strong>User Integrity:</strong> Users must refrain from malicious data tampering or unauthorized access.</li>
+          </ul>
+          <p class="small text-secondary mb-0">For complete policy details, view the <a href="{% url 'terms' %}" target="_blank" class="fw-bold">Full Terms and Conditions Document</a>.</p>
+        </div>
+        <div class="modal-footer" style="background: #f8f9fa;">
+          <button type="button" id="agreeTermsPopBtn" class="btn btn-primary w-100 fw-bold">
+            <i class="fas fa-check-circle me-2"></i> I Agree & Accept Terms and Conditions
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

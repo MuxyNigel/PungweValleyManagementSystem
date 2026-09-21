@@ -22,4 +22,5 @@ urlpatterns = [
     path('news/<int:article_id>/', views.news_detail, name='news_detail'),
     path('rules/', views.rules, name='rules'),
     path('contact/', views.contact, name='contact'),
+    path('terms/', views.terms, name='terms'),
 ]

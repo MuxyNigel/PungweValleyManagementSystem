@@ -6,7 +6,7 @@
 <style>
 .contact-header {
     background: linear-gradient(135deg, var(--primary-color) 0%, #154343 100%);
-    color: white;
+    color: #ffffff;
     padding: 2.5rem;
     border-radius: 16px;
     margin-bottom: 2rem;
@@ -14,14 +14,21 @@
     text-align: center;
 }
 
+.contact-header h1 {
+    color: #ffffff !important;
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
 .contact-card {
-    background: var(--card-bg);
+    background: linear-gradient(135deg, #1E5A5A 0%, #0F1C2E 100%);
+    color: #ffffff !important;
     border-radius: 14px;
     padding: 2rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
     margin-bottom: 2rem;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-top: 4px solid var(--secondary-color);
+    border: 2px solid var(--secondary-color);
     transition: transform 0.3s ease;
 }
 
@@ -29,12 +36,22 @@
     transform: translateY(-5px);
 }
 
+.contact-card h3 {
+    color: var(--secondary-color) !important;
+}
+
+.contact-card p {
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
 .contact-icon-box {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: rgba(30, 90, 90, 0.1);
-    color: var(--primary-color);
+    background: rgba(255, 184, 28, 0.2);
+    color: var(--secondary-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -51,7 +68,7 @@
 
 .btn-whatsapp {
     background-color: #25D366;
-    color: white;
+    color: white !important;
     font-weight: 700;
     text-decoration: none;
     padding: 0.6rem 1.2rem;
@@ -64,17 +81,18 @@
 
 .btn-whatsapp:hover {
     background-color: #1ebd56;
-    color: white;
+    color: white !important;
     transform: translateY(-2px);
 }
 
 .btn-call {
     background-color: var(--primary-color);
-    color: white;
+    color: white !important;
     font-weight: 700;
     text-decoration: none;
     padding: 0.6rem 1.2rem;
     border-radius: 8px;
+    border: 1px solid var(--secondary-color);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -83,13 +101,13 @@
 
 .btn-call:hover {
     background-color: #0d3a3a;
-    color: white;
+    color: white !important;
     transform: translateY(-2px);
 }
 
 .btn-email {
     background-color: var(--secondary-color);
-    color: var(--dark-bg);
+    color: var(--dark-bg) !important;
     font-weight: 700;
     text-decoration: none;
     padding: 0.6rem 1.2rem;
@@ -102,13 +120,13 @@
 
 .btn-email:hover {
     background-color: #ff9800;
-    color: black;
+    color: black !important;
     transform: translateY(-2px);
 }
 </style>
 
 <div class="contact-header">
-    <h1 style="font-weight: 800; font-size: 2.5rem; margin-bottom: 0.5rem;">
+    <h1>
         <i class="fas fa-headset"></i> PVPSL Contact & Support
     </h1>
     <p style="color: var(--secondary-color); font-weight: 600; margin: 0;">
@@ -123,12 +141,14 @@
             <div class="contact-icon-box">
                 <i class="fas fa-user-shield"></i>
             </div>
-            <h3 style="font-weight: 800; color: var(--primary-color); margin-bottom: 0.25rem;">Nigel Mubure</h3>
-            <span class="badge bg-secondary mb-3">League Administrator</span>
-            <p class="text-muted small">For official club registrations, player transfers, fixture inquiries, and executive league matters.</p>
+            <h3 style="font-weight: 800; margin-bottom: 0.25rem;">Nigel Mubure</h3>
+            <span class="badge bg-warning text-dark mb-3">League Administrator</span>
+            <p style="color: #ffffff !important; font-weight: 600; font-size: 0.95rem;">
+                For official club registrations, player transfers, fixture inquiries, and executive league matters.
+            </p>
             
-            <ul class="list-unstyled mb-3" style="font-weight: 600; font-size: 0.95rem;">
-                <li class="mb-2"><i class="fas fa-phone text-primary me-2"></i> +263 784 264 672</li>
+            <ul class="list-unstyled mb-3" style="font-weight: 600; font-size: 0.95rem; color: #ffffff;">
+                <li class="mb-2"><i class="fas fa-phone text-warning me-2"></i> +263 784 264 672</li>
                 <li class="mb-2"><i class="fab fa-whatsapp text-success me-2"></i> +263 789 727 983</li>
                 <li><i class="fas fa-envelope text-warning me-2"></i> nimubure21@gmail.com</li>
             </ul>
@@ -144,18 +164,20 @@
         </div>
     </div>
 
-    <!-- Assistant Administrator -->
+    <!-- Assistant Administrator / Operations -->
     <div class="col-md-6">
         <div class="contact-card">
             <div class="contact-icon-box">
                 <i class="fas fa-user-cog"></i>
             </div>
-            <h3 style="font-weight: 800; color: var(--primary-color); margin-bottom: 0.25rem;">PVPSL Assistant Office</h3>
+            <h3 style="font-weight: 800; margin-bottom: 0.25rem;">PVPSL Assistant Office</h3>
             <span class="badge bg-info text-dark mb-3">Operations & Fan Support</span>
-            <p class="text-muted small">For matchday logistics, fan queries, general statistics, venue information, and referee coordination.</p>
+            <p style="color: #ffffff !important; font-weight: 600; font-size: 0.95rem;">
+                For matchday logistics, fan queries, general statistics, venue information, and referee coordination.
+            </p>
             
-            <ul class="list-unstyled mb-3" style="font-weight: 600; font-size: 0.95rem;">
-                <li class="mb-2"><i class="fas fa-phone text-primary me-2"></i> +263 784 264 672</li>
+            <ul class="list-unstyled mb-3" style="font-weight: 600; font-size: 0.95rem; color: #ffffff;">
+                <li class="mb-2"><i class="fas fa-phone text-warning me-2"></i> +263 784 264 672</li>
                 <li class="mb-2"><i class="fab fa-whatsapp text-success me-2"></i> +263 789 727 983</li>
                 <li><i class="fas fa-envelope text-warning me-2"></i> info@pvpsl.co.zw</li>
             </ul>
@@ -172,12 +194,4 @@
     </div>
 </div>
 
-<!-- Admin Portal Access Banner -->
-<div class="contact-card text-center" style="background: linear-gradient(135deg, rgba(15,28,46,0.05) 0%, rgba(30,90,90,0.1) 100%);">
-    <h4 style="font-weight: 800; color: var(--primary-color);"><i class="fas fa-lock me-2"></i> League Administrator Portal</h4>
-    <p class="text-muted mb-3">Authorized League Officials can access the backend management system to register clubs, enter match results, update standings, and manage discipline.</p>
-    <a href="/admin/" target="_blank" class="btn btn-primary">
-        <i class="fas fa-user-shield me-2"></i> Open PVPSL Admin Portal
-    </a>
-</div>
 {% endblock %}

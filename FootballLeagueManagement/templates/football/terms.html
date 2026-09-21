@@ -1,0 +1,107 @@
+{% extends 'football/base.html' %}
+
+{% block title %}Terms and Conditions - PVPSL{% endblock %}
+
+{% block content %}
+<style>
+.terms-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #154343 100%);
+    color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.terms-header h1 {
+    color: #ffffff !important;
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.terms-card {
+    background: #ffffff;
+    color: #1a1a1a;
+    border-radius: 14px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    margin-bottom: 2rem;
+    border-top: 4px solid var(--secondary-color);
+}
+
+.terms-card h3 {
+    color: var(--primary-color);
+    font-weight: 800;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.3rem;
+}
+
+.terms-card p, .terms-card li {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #2c3e50;
+}
+</style>
+
+<div class="terms-header">
+    <h1>
+        <i class="fas fa-file-contract"></i> Terms and Conditions
+    </h1>
+    <p style="color: var(--secondary-color); font-weight: 600; margin: 0;">
+        Pungwe Valley Professional Soccer League (PVPSL) Official User Agreement & Governance Terms
+    </p>
+</div>
+
+<div class="terms-card">
+    <p class="lead fw-bold text-primary">
+        Welcome to the Pungwe Valley Professional Soccer League (PVPSL) official platform. By accessing or using this website, you agree to be bound by these Terms and Conditions.
+    </p>
+    <hr>
+
+    <h3>1. Acceptance of Terms</h3>
+    <p>
+        By visiting, viewing, or interacting with the PVPSL platform, all users (including fans, club representatives, players, and officials) acknowledge that they have read, understood, and agreed to adhere to these Terms and Conditions as well as the official PVPSL Constitution and Disciplinary Rules.
+    </p>
+
+    <h3>2. Intellectual Property & Rights</h3>
+    <p>
+        All content, including but not limited to club crests, league statistics, match fixtures, logos, news articles, and photos, are the exclusive property of the Pungwe Valley Professional Soccer League. Unauthorized reproduction or commercial distribution without written consent is strictly prohibited.
+    </p>
+
+    <h3>3. Code of Conduct & Fair Play</h3>
+    <p>
+        PVPSL promotes sportsmanship, integrity, and fair play. Users interacting with the portal must refrain from posting defamatory, fraudulent, or harmful information. Any attempt to tamper with match statistics or breach administrative access will result in immediate legal and disciplinary action.
+    </p>
+
+    <h3>4. Disciplinary Regulations & Governance</h3>
+    <p>
+        All registered players, coaches, and clubs are subject to the PVPSL Disciplinary Code. Fines, yellow/red card suspensions, and match dispute rulings published by the Secretariat are final and binding under league regulations.
+    </p>
+
+    <h3>5. Limitation of Liability</h3>
+    <p>
+        While PVPSL makes every effort to ensure real-time accuracy of match schedules, statistics, and league standings, the league is not liable for temporary technical outages or unintended delays in data synchronization.
+    </p>
+
+    <h3>6. Contact Secretariat</h3>
+    <p>
+        For inquiries regarding these Terms and Conditions or league policies, please reach out to the League Secretariat via the official <a href="{% url 'contact' %}" class="fw-bold text-primary">Contact Page</a>.
+    </p>
+
+    <div class="mt-4 p-3 text-center bg-light border-radius-8">
+        <button id="acceptTermsBtnPage" class="btn btn-success btn-lg">
+            <i class="fas fa-check-circle me-2"></i> I Accept PVPSL Terms & Conditions
+        </button>
+    </div>
+</div>
+
+<script>
+document.getElementById('acceptTermsBtnPage')?.addEventListener('click', function() {
+    localStorage.setItem('pvpsl_terms_agreed', 'true');
+    alert('Thank you for accepting the PVPSL Terms and Conditions!');
+});
+</script>
+{% endblock %}

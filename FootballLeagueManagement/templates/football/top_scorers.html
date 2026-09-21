@@ -14,40 +14,21 @@
     text-align: center;
 }
 
-.stats-nav {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-}
-
-.stats-nav .nav-link {
-    background: var(--card-bg);
-    color: var(--primary-color);
-    font-weight: 700;
-    padding: 0.75rem 1.25rem;
-    border-radius: 30px;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.stats-nav .nav-link:hover, .stats-nav .nav-link.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--secondary-color);
-    transform: translateY(-2px);
+.stats-header h1 {
+    color: #ffffff !important;
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .leaderboard-card {
-    background: var(--card-bg);
+    background: #ffffff;
     border-radius: 14px;
     padding: 1.5rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    border: 1px solid rgba(0,0,0,0.08);
     margin-bottom: 2rem;
+    color: #1a1a1a;
 }
 
 .leaderboard-title {
@@ -69,17 +50,20 @@
 
 .leaderboard-table th {
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     letter-spacing: 0.5px;
-    color: var(--text-light);
+    color: #333333;
+    font-weight: 800;
     padding: 0.75rem;
     text-align: left;
+    border-bottom: 2px solid #e9ecef;
 }
 
 .leaderboard-table td {
     padding: 0.9rem 0.75rem;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid #e9ecef;
     font-weight: 600;
+    color: #1a1a1a;
 }
 
 .leaderboard-table tr:last-child td {
@@ -96,6 +80,7 @@
     background: #e9ecef;
     font-weight: 800;
     font-size: 0.85rem;
+    color: #1a1a1a;
 }
 
 .rank-1 { background: #ffd700; color: #000; }
@@ -104,7 +89,7 @@
 </style>
 
 <div class="stats-header">
-    <h1 style="font-weight: 800; font-size: 2.5rem; margin-bottom: 0.5rem;">
+    <h1>
         <i class="fas fa-chart-line"></i> PVPSL Statistics Hub
     </h1>
     <p style="color: var(--secondary-color); font-weight: 600; margin: 0;">
@@ -141,7 +126,7 @@
                                 {{ p.name }}
                             </a>
                         </td>
-                        <td>{{ p.team.name }}</td>
+                        <td style="color: #1a1a1a;">{{ p.team.name }}</td>
                         <td style="text-align: right; font-weight: 800; font-size: 1.1rem; color: #27ae60;">
                             {{ p.goals }}
                         </td>
@@ -182,7 +167,7 @@
                                 {{ p.name }}
                             </a>
                         </td>
-                        <td>{{ p.team.name }}</td>
+                        <td style="color: #1a1a1a;">{{ p.team.name }}</td>
                         <td style="text-align: right; font-weight: 800; font-size: 1.1rem; color: #2980b9;">
                             {{ p.assists }}
                         </td>
@@ -216,8 +201,8 @@
                     {% for item in best_attack %}
                     <tr>
                         <td><span class="rank-badge">{{ forloop.counter }}</span></td>
-                        <td style="font-weight: 700;">{{ item.team.name }}</td>
-                        <td>{{ item.played }}</td>
+                        <td style="font-weight: 700; color: #1a1a1a;">{{ item.team.name }}</td>
+                        <td style="color: #1a1a1a;">{{ item.played }}</td>
                         <td style="text-align: right; font-weight: 800; color: #e74c3c;">{{ item.gf }}</td>
                     </tr>
                     {% endfor %}
@@ -245,8 +230,8 @@
                     {% for item in best_defence %}
                     <tr>
                         <td><span class="rank-badge">{{ forloop.counter }}</span></td>
-                        <td style="font-weight: 700;">{{ item.team.name }}</td>
-                        <td>{{ item.played }}</td>
+                        <td style="font-weight: 700; color: #1a1a1a;">{{ item.team.name }}</td>
+                        <td style="color: #1a1a1a;">{{ item.played }}</td>
                         <td style="text-align: right; font-weight: 800; color: #8e44ad;">{{ item.ga }}</td>
                     </tr>
                     {% endfor %}
@@ -276,8 +261,8 @@
                     {% for item in clean_sheets_leaderboard %}
                     <tr>
                         <td><span class="rank-badge">{{ forloop.counter }}</span></td>
-                        <td style="font-weight: 700;">{{ item.team.name }}</td>
-                        <td>{{ item.played }}</td>
+                        <td style="font-weight: 700; color: #1a1a1a;">{{ item.team.name }}</td>
+                        <td style="color: #1a1a1a;">{{ item.played }}</td>
                         <td style="text-align: right; font-weight: 800; color: #16a085;">{{ item.clean_sheets }}</td>
                     </tr>
                     {% endfor %}
@@ -306,7 +291,7 @@
                     {% for item in fair_play_leaderboard %}
                     <tr>
                         <td><span class="rank-badge">{{ forloop.counter }}</span></td>
-                        <td style="font-weight: 700;">{{ item.team.name }}</td>
+                        <td style="font-weight: 700; color: #1a1a1a;">{{ item.team.name }}</td>
                         <td><span class="badge bg-warning text-dark">{{ item.yellows }}</span></td>
                         <td><span class="badge bg-danger">{{ item.reds }}</span></td>
                         <td style="text-align: right; font-weight: 800; color: #f39c12;">{{ item.fair_play_pts }}</td>

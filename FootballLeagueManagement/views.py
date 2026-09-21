@@ -21,6 +21,7 @@ from .models import (
     TransferHistory,
     Division,
     Goal,
+    Fine,
 )
 
 
@@ -663,3 +664,6 @@ def player_profile(request, player_id):
 
 def contact(request):
     return render(request, 'football/contact.html')
+
+def terms(request):
+    return render(request, 'football/terms.html')
