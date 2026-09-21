@@ -14,6 +14,13 @@ from .models import (
     Season,
     Referee,
     Venue,
+    NewsArticle,
+    Sponsor,
+    Rule,
+    Contract,
+    TransferHistory,
+    Division,
+    Goal,
 )
 
 
@@ -21,7 +28,8 @@ from .models import (
 # Home view
 # -------------------------
 def home(request):
-    return render(request, 'football/home.html')
+    latest_news = NewsArticle.objects.all()[:3]
+    return render(request, 'football/home.html', {'latest_news': latest_news})
 
 
 # -------------------------
@@ -77,12 +85,14 @@ def match_detail(request, match_id):
     referees = MatchRef.objects.filter(match=match).select_related('ref')
     cards = Card.objects.filter(match=match).select_related('player')
     issues = MatchIssue.objects.filter(match=match)
+    goals = Goal.objects.filter(match=match).select_related('scorer', 'assist')
 
     return render(request, 'football/match_detail.html', {
         'match': match,
         'referees': referees,
         'cards': cards,
-        'issues': issues
+        'issues': issues,
+        'goals': goals
     })
 
 
@@ -105,131 +115,134 @@ def league_standings(request):
     # Only consider matches that are Completed for table calculations
     matches_qs = matches_qs.filter(status='Completed')
 
-    # If week provided, optionally filter matches to that week (assumes you mark a 'week' somewhere; here we filter by date range if needed)
-    # For now we'll accept week as informational only; no automatic mapping to dates unless you provide week->date logic.
+    divisions = Division.objects.all().order_by('tier')
+    all_standings = []
+    
+    # We will compute an overall computed_week across the whole league
+    all_played_counts = []
 
-    # Teams
-    teams = Team.objects.all()
+    # If no divisions exist, put all teams in a dummy division
+    if not divisions.exists():
+        divisions_list = [{'id': None, 'name': 'Overall', 'obj': None}]
+    else:
+        divisions_list = [{'id': d.id, 'name': d.name, 'obj': d} for d in divisions]
 
-    # Build standings according to scope
-    standings = []
-    total_teams = teams.count()
+    for div in divisions_list:
+        if div['obj'] is None:
+            teams = Team.objects.all()
+        else:
+            teams = Team.objects.filter(division=div['obj'])
 
-    for team in teams:
-        matches = matches_qs.filter(Q(home_team=team) | Q(away_team=team))
+        standings = []
+        total_teams = teams.count()
 
-        if scope == 'home':
-            matches = matches.filter(home_team=team)
-        elif scope == 'away':
-            matches = matches.filter(away_team=team)
+        for team in teams:
+            matches = matches_qs.filter(Q(home_team=team) | Q(away_team=team))
 
-        played = matches.count()
+            if scope == 'home':
+                matches = matches.filter(home_team=team)
+            elif scope == 'away':
+                matches = matches.filter(away_team=team)
 
-        wins = matches.filter(
-            (Q(home_team=team) & Q(home_team_score__gt=F('away_team_score'))) |
-            (Q(away_team=team) & Q(away_team_score__gt=F('home_team_score')))
-        ).count()
+            played = matches.count()
+            all_played_counts.append(played)
 
-        draws = matches.filter(
-            Q(home_team=team, home_team_score=F('away_team_score')) |
-            Q(away_team=team, away_team_score=F('home_team_score'))
-        ).count()
+            wins = matches.filter(
+                (Q(home_team=team) & Q(home_team_score__gt=F('away_team_score'))) |
+                (Q(away_team=team) & Q(away_team_score__gt=F('home_team_score')))
+            ).count()
 
-        losses = played - wins - draws
+            draws = matches.filter(
+                Q(home_team=team, home_team_score=F('away_team_score')) |
+                Q(away_team=team, away_team_score=F('home_team_score'))
+            ).count()
 
-        goals_for = matches.aggregate(
-            total=Sum(
-                Case(
-                    When(home_team=team, then=F('home_team_score')),
-                    When(away_team=team, then=F('away_team_score')),
+            losses = played - wins - draws
+
+            goals_for = matches.aggregate(
+                total=Sum(
+                    Case(
+                        When(home_team=team, then=F('home_team_score')),
+                        When(away_team=team, then=F('away_team_score')),
+                    )
                 )
-            )
-        )['total'] or 0
+            )['total'] or 0
 
-        goals_against = matches.aggregate(
-            total=Sum(
-                Case(
-                    When(home_team=team, then=F('away_team_score')),
-                    When(away_team=team, then=F('home_team_score')),
+            goals_against = matches.aggregate(
+                total=Sum(
+                    Case(
+                        When(home_team=team, then=F('away_team_score')),
+                        When(away_team=team, then=F('home_team_score')),
+                    )
                 )
+            )['total'] or 0
+
+            goal_difference = goals_for - goals_against
+            points = wins * 3 + draws
+
+            standings.append({
+                'team': team,
+                'played': played,
+                'wins': wins,
+                'draws': draws,
+                'losses': losses,
+                'goals_for': goals_for,
+                'goals_against': goals_against,
+                'goal_difference': goal_difference,
+                'points': points
+            })
+
+        any_played = any(entry['played'] > 0 for entry in standings)
+
+        if not any_played:
+            standings.sort(key=lambda x: x['team'].name.lower())
+        else:
+            played_entries = [entry for entry in standings if entry['played'] > 0]
+            zero_entries = [entry for entry in standings if entry['played'] == 0]
+
+            played_entries.sort(
+                key=lambda x: (x['points'], x['goal_difference'], x['goals_for']),
+                reverse=True
             )
-        )['total'] or 0
+            zero_entries.sort(key=lambda x: x['team'].name.lower())
+            standings = played_entries + zero_entries
 
-        goal_difference = goals_for - goals_against
-        points = wins * 3 + draws
+        total_teams = len(standings)
 
-        standings.append({
-            'team': team,
-            'played': played,
-            'wins': wins,
-            'draws': draws,
-            'losses': losses,
-            'goals_for': goals_for,
-            'goals_against': goals_against,
-            'goal_difference': goal_difference,
-            'points': points
+        for index, entry in enumerate(standings):
+            position = index + 1
+            entry['position'] = position
+
+            if position == 1:
+                entry['row_class'] = 'champion'
+            elif 2 <= position <= 5:
+                entry['row_class'] = 'top-five'
+            elif position > total_teams - 3:
+                entry['row_class'] = 'relegation'
+            else:
+                entry['row_class'] = ''
+
+        all_standings.append({
+            'division_name': div['name'],
+            'division_id': div['id'],
+            'standings': standings
         })
 
-    # If no completed matches exist yet, show all teams alphabetically (league not started)
-    any_played = any(entry['played'] > 0 for entry in standings)
-
-    if not any_played:
-        # League not started: alphabetical A→Z
-        standings.sort(key=lambda x: x['team'].name.lower())
-    else:
-        # Keep all teams visible: played teams first (competitive order), then zero-played teams alphabetically
-        played_entries = [entry for entry in standings if entry['played'] > 0]
-        zero_entries = [entry for entry in standings if entry['played'] == 0]
-
-        # Sort played entries by Points → Goal Difference → Goals Scored (descending)
-        played_entries.sort(
-            key=lambda x: (x['points'], x['goal_difference'], x['goals_for']),
-            reverse=True
-        )
-
-        # Sort zero-played entries alphabetically A→Z
-        zero_entries.sort(key=lambda x: x['team'].name.lower())
-
-        # Concatenate lists so played teams appear first
-        standings = played_entries + zero_entries
-
-    # Recompute total teams after ordering
-    total_teams = len(standings)
-
-    # Add position & row color (positions reflect current ordering)
-    for index, entry in enumerate(standings):
-        position = index + 1
-        entry['position'] = position
-
-        if position == 1:
-            entry['row_class'] = 'champion'
-        elif 2 <= position <= 5:
-            entry['row_class'] = 'top-five'
-        elif position > total_teams - 3:
-            entry['row_class'] = 'relegation'
-        else:
-            entry['row_class'] = ''
-
-    # Determine automatic week based on majority 'played' (P) among teams with played > 0
-    played_counts = Counter(entry['played'] for entry in standings if entry['played'] > 0)
+    # Determine automatic week
+    played_counts = Counter(p for p in all_played_counts if p > 0)
     if played_counts:
-        # choose the played value with highest frequency, tie break by larger played value
         computed_week = max(played_counts.items(), key=lambda x: (x[1], x[0]))[0]
     else:
-        # default to week 1 when no matches played yet so header shows 'WEEK 1'
         computed_week = 1
 
-    # Send data to template
     context = {
-        'standings': standings,
+        'all_standings': all_standings,
         'seasons': seasons,
         'selected_year': year,
         'selected_scope': scope,
-        'teams': teams,
         'computed_week': computed_week,
     }
 
-    # Notice list and team search endpoints are module-level views (see below)
     return render(request, 'football/league_table.html', context)
 
 
@@ -370,13 +383,70 @@ def referee_detail(request, ref_id):
 
 
 # -------------------------
-# Top scorers view
+# Top scorers & League Statistics view
 # -------------------------
 def top_scorers(request):
-    players = Player.objects.all().order_by('-goals')[:10]
+    top_scorers_list = Player.objects.select_related('team').order_by('-goals')[:10]
+    top_assists_list = Player.objects.select_related('team').order_by('-assists')[:10]
+
+    teams = Team.objects.all()
+    completed_matches = Match.objects.filter(status='Completed')
+
+    team_stats = []
+    for team in teams:
+        matches = completed_matches.filter(Q(home_team=team) | Q(away_team=team))
+        played = matches.count()
+
+        gf = matches.aggregate(
+            total=Sum(
+                Case(
+                    When(home_team=team, then=F('home_team_score')),
+                    When(away_team=team, then=F('away_team_score')),
+                )
+            )
+        )['total'] or 0
+
+        ga = matches.aggregate(
+            total=Sum(
+                Case(
+                    When(home_team=team, then=F('away_team_score')),
+                    When(away_team=team, then=F('home_team_score')),
+                )
+            )
+        )['total'] or 0
+
+        clean_sheets = matches.filter(
+            (Q(home_team=team, away_team_score=0)) |
+            (Q(away_team=team, home_team_score=0))
+        ).count()
+
+        yellows = Card.objects.filter(player__team=team, card_type='Yellow').count()
+        reds = Card.objects.filter(player__team=team, card_type='Red').count()
+        fair_play_pts = (yellows * 1) + (reds * 3)
+
+        team_stats.append({
+            'team': team,
+            'played': played,
+            'gf': gf,
+            'ga': ga,
+            'clean_sheets': clean_sheets,
+            'yellows': yellows,
+            'reds': reds,
+            'fair_play_pts': fair_play_pts
+        })
+
+    best_attack = sorted(team_stats, key=lambda x: x['gf'], reverse=True)[:10]
+    best_defence = sorted(team_stats, key=lambda x: x['ga'])[:10]
+    clean_sheets_leaderboard = sorted(team_stats, key=lambda x: x['clean_sheets'], reverse=True)[:10]
+    fair_play_leaderboard = sorted(team_stats, key=lambda x: x['fair_play_pts'])[:10]
 
     return render(request, 'football/top_scorers.html', {
-        'players': players
+        'top_scorers': top_scorers_list,
+        'top_assists': top_assists_list,
+        'best_attack': best_attack,
+        'best_defence': best_defence,
+        'clean_sheets_leaderboard': clean_sheets_leaderboard,
+        'fair_play_leaderboard': fair_play_leaderboard,
     })
 
 # -------------------------
@@ -470,9 +540,17 @@ def get_player_discipline(request):
             'suspensions': suspensions
         })
 
-    # Pass this to template
+    fines = Fine.objects.select_related('match').order_by('-id')
+    issues = MatchIssue.objects.select_related('match', 'team', 'ref').order_by('-id')
+
     seasons = Season.objects.order_by('-year')
-    return render(request, 'football/discipline.html', {'players': player_discipline_info, 'seasons': seasons, 'selected_season': season})
+    return render(request, 'football/discipline.html', {
+        'players': player_discipline_info,
+        'seasons': seasons,
+        'selected_season': season,
+        'fines': fines,
+        'issues': issues,
+    })
 
 # -------------------------
 # Venues list and detail view
@@ -544,3 +622,44 @@ def venue_detail(request, venue_id):
             'total_goals': total_goals,
         }
     })
+
+# -------------------------
+# New Pages Views
+# -------------------------
+
+def about_us(request):
+    return render(request, 'football/about_us.html')
+
+def news_list(request):
+    articles = NewsArticle.objects.all()
+    return render(request, 'football/news_list.html', {'articles': articles})
+
+def news_detail(request, article_id):
+    article = get_object_or_404(NewsArticle, id=article_id)
+    return render(request, 'football/news_detail.html', {'article': article})
+
+def rules(request):
+    league_rules = Rule.objects.all()
+    return render(request, 'football/rules.html', {'rules': league_rules})
+
+def player_profile(request, player_id):
+    player = get_object_or_404(Player, id=player_id)
+    contracts = Contract.objects.filter(entity_type='Player', entity_name=player.name).order_by('-start_date')
+    cards = Card.objects.filter(player=player).select_related('match').order_by('-match__date')
+    transfers = TransferHistory.objects.filter(player=player).select_related('from_team', 'to_team').order_by('-transfer_date')
+    
+    yellow_cards_count = cards.filter(card_type='Yellow').count()
+    red_cards_count = cards.filter(card_type='Red').count()
+    
+    context = {
+        'player': player,
+        'contracts': contracts,
+        'cards': cards,
+        'transfers': transfers,
+        'yellow_cards_count': yellow_cards_count,
+        'red_cards_count': red_cards_count,
+    }
+    return render(request, 'football/player_profile.html', context)
+
+def contact(request):
+    return render(request, 'football/contact.html')

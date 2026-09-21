@@ -13,11 +13,26 @@ class Season(models.Model):
     def __str__(self):
         return f"{self.year} Season"
 
+class Division(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    tier = models.PositiveIntegerField(help_text="1 is the top tier (e.g. League A)")
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['tier', 'name']
+
 class Team(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, null=True, blank=True)
+    division = models.ForeignKey(Division, on_delete=models.SET_NULL, null=True, blank=True, related_name='teams')
     name = models.CharField(max_length=100, unique=True)
     logo = models.ImageField(upload_to='team_logos/')
+    home_ground = models.ForeignKey('Venue', on_delete=models.SET_NULL, null=True, blank=True, related_name='home_teams')
     coach = models.CharField(max_length=100)
+    manager = models.CharField(max_length=100, null=True, blank=True)
+    year_established = models.PositiveIntegerField(null=True, blank=True)
+    history = models.TextField(null=True, blank=True)
     contact_details = models.CharField(
         max_length=10,
         null=True,
@@ -36,9 +51,14 @@ class Team(models.Model):
     
 class Player(models.Model):
     name = models.CharField(max_length=100)
+    photo = models.ImageField(upload_to='player_photos/', null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    national_id = models.CharField(max_length=50, null=True, blank=True)
+    jersey_number = models.PositiveIntegerField(null=True, blank=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players')
     position = models.CharField(max_length=50)
     goals = models.PositiveIntegerField(default=0)  # New field for goals scored
+    assists = models.PositiveIntegerField(default=0)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -86,6 +106,7 @@ class Match(models.Model):
     home_team_score = models.PositiveIntegerField(null=True, blank=True)
     away_team_score = models.PositiveIntegerField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Scheduled')  # e.g., Scheduled, Completed
+    report = models.TextField(null=True, blank=True, help_text="Match report and summary.")
 
     def clean(self):
         if self.home_team_id == self.away_team_id:
@@ -223,3 +244,80 @@ class CustomUser(AbstractUser):
         blank=True,
         verbose_name='user permissions'
     )
+
+class NewsArticle(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    image = models.ImageField(upload_to='news_images/', null=True, blank=True)
+    published_date = models.DateTimeField(auto_now_add=True)
+    author = models.CharField(max_length=100, default='League Admin')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-published_date']
+
+class Sponsor(models.Model):
+    SPONSOR_TYPES = [
+        ('League', 'League Sponsor'),
+        ('Team', 'Team Sponsor'),
+    ]
+    name = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to='sponsor_logos/')
+    website_url = models.URLField(max_length=200, null=True, blank=True)
+    sponsor_type = models.CharField(max_length=20, choices=SPONSOR_TYPES, default='League')
+
+    def __str__(self):
+        return f"{self.name} ({self.sponsor_type})"
+
+class Rule(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    order = models.PositiveIntegerField(default=0, help_text="Order in which this rule appears.")
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['order']
+
+class TransferHistory(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='transfer_history')
+    from_team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True, related_name='transfers_out')
+    to_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='transfers_in')
+    transfer_date = models.DateField()
+    transfer_fee = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    details = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.player.name}: {self.from_team} -> {self.to_team} on {self.transfer_date}"
+
+    class Meta:
+        ordering = ['-transfer_date']
+
+class PromotionRelegation(models.Model):
+    STATUS_CHOICES = [
+        ('Promoted', 'Promoted'),
+        ('Relegated', 'Relegated'),
+    ]
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='promotions_relegations')
+    season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    from_division = models.ForeignKey(Division, on_delete=models.CASCADE, related_name='from_records')
+    to_division = models.ForeignKey(Division, on_delete=models.CASCADE, related_name='to_records')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+
+    def __str__(self):
+        return f"{self.team.name} - {self.status} to {self.to_division.name} ({self.season.year})"
+
+class Goal(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='goals')
+    scorer = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='goals_scored')
+    assist = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, blank=True, related_name='goals_assisted')
+    minute = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"Goal by {self.scorer.name} at {self.minute}'"
+
+    class Meta:
+        ordering = ['minute']

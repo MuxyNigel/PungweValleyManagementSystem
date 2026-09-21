@@ -1,0 +1,29 @@
+{% extends 'football/base.html' %}
+
+{% block title %}{{ article.title }} - PVPSL News{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2">
+      <a href="{% url 'news_list' %}" class="btn-back mb-4"><i class="fas fa-arrow-left"></i> Back to News</a>
+      
+      <h1 class="mb-3" style="border-bottom: none;">{{ article.title }}</h1>
+      <div class="d-flex align-items-center text-muted mb-4 pb-3 border-bottom">
+        <span class="me-4"><i class="fas fa-calendar-alt"></i> {{ article.published_date|date:"F j, Y, g:i a" }}</span>
+        <span><i class="fas fa-user-circle"></i> By {{ article.author }}</span>
+      </div>
+
+      {% if article.image %}
+        <div class="mb-4 text-center">
+          <img src="{{ article.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ article.title }}" style="max-height: 400px; width: 100%; object-fit: cover;">
+        </div>
+      {% endif %}
+
+      <div class="article-content" style="font-size: 1.1rem; line-height: 1.8;">
+        {{ article.content|linebreaks }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

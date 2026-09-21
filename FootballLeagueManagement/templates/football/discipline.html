@@ -1,51 +1,221 @@
 {% extends 'football/base.html' %}
 
+{% block title %}Discipline & Governance Hub - PVPSL{% endblock %}
+
 {% block content %}
-<h2>Player Discipline Overview</h2>
-<form method="get" style="margin-bottom:1rem;">
-    <label>Season:
-        <select name="season" onchange="this.form.submit()">
-            <option value="">All</option>
+<style>
+.discipline-header {
+    background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%);
+    color: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.discipline-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.discipline-card-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.5rem;
+}
+
+.disc-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.disc-table th {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    padding: 0.75rem;
+    text-align: left;
+    background: rgba(0,0,0,0.02);
+}
+
+.disc-table td {
+    padding: 0.9rem 0.75rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-weight: 600;
+}
+
+.badge-yellow { background: #f39c12; color: white; }
+.badge-red { background: #e74c3c; color: white; }
+.badge-pending { background: #e67e22; color: white; }
+.badge-paid { background: #27ae60; color: white; }
+.badge-open { background: #e74c3c; color: white; }
+.badge-resolved { background: #27ae60; color: white; }
+</style>
+
+<div class="discipline-header">
+    <h1 style="font-weight: 800; font-size: 2.5rem; margin-bottom: 0.5rem;">
+        <i class="fas fa-gavel"></i> Discipline & Governance Hub
+    </h1>
+    <p style="color: var(--secondary-color); font-weight: 600; margin: 0;">
+        PVPSL Disciplinary Tracker • Suspensions • Fines & Compliance Reports
+    </p>
+</div>
+
+<!-- Season Filter -->
+<div class="discipline-card mb-4" style="padding: 1rem 1.5rem;">
+    <form method="get" class="d-flex align-items-center gap-3">
+        <label style="font-weight: 700; color: var(--primary-color); margin: 0;">Filter by Season:</label>
+        <select name="season" onchange="this.form.submit()" class="form-select" style="max-width: 200px; border: 2px solid var(--primary-color);">
+            <option value="">All Seasons</option>
             {% for s in seasons %}
-                <option value="{{ s.year }}" {% if selected_season and selected_season.year == s.year %}selected{% endif %}>{{ s.year }}</option>
+                <option value="{{ s.year }}" {% if selected_season and selected_season.year == s.year %}selected{% endif %}>{{ s.year }} Season</option>
             {% endfor %}
         </select>
-    </label>
-</form>
+    </form>
+</div>
 
-<table border="1" cellpadding="8" cellspacing="0" width="100%">
-    <thead>
-        <tr>
-            <th>Player</th>
-            <th>Total Yellow Cards</th>
-            <th>Total Red Cards</th>
-            <th>Suspensions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in players %}
-        <tr>
-            <td>{{ entry.player.name }}</td>
-            <td>{{ entry.total_yellows }}</td>
-            <td>{{ entry.total_reds }}</td>
-            <td>
-                {% if entry.suspensions %}
-                    <ul>
-                    {% for suspend in entry.suspensions %}
-                        <li>
-                            {{ suspend.reason }} ({{ suspend.type }})
-                            {% if suspend.match %}
-                                - after match on {{ suspend.match.date }} at {{ suspend.match.venue.name }}
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                    </ul>
-                {% else %}
-                    <em>No suspensions</em>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- Player Cards & Suspensions -->
+<div class="discipline-card">
+    <div class="discipline-card-title">
+        <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Player Disciplinary Records & Suspensions
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="disc-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>Yellow Cards</th>
+                    <th>Red Cards</th>
+                    <th>Active Suspensions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in players %}
+                <tr>
+                    <td>
+                        <a href="{% url 'player_profile' entry.player.id %}" style="text-decoration: none; color: var(--primary-color); font-weight: 700;">
+                            {{ entry.player.name }}
+                        </a>
+                    </td>
+                    <td>{{ entry.player.team.name }}</td>
+                    <td><span class="badge badge-yellow">{{ entry.total_yellows }}</span></td>
+                    <td><span class="badge badge-red">{{ entry.total_reds }}</span></td>
+                    <td>
+                        {% if entry.suspensions %}
+                            {% for suspend in entry.suspensions %}
+                                <div class="badge bg-danger mb-1" style="display: inline-block; font-size: 0.85rem; padding: 0.4rem 0.6rem;">
+                                    <i class="fas fa-ban"></i> {{ suspend.reason }} ({{ suspend.type }})
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-success"><i class="fas fa-check-circle"></i> Clean Record</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted">No disciplinary records found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Fines Ledger -->
+    <div class="col-md-6">
+        <div class="discipline-card">
+            <div class="discipline-card-title">
+                <i class="fas fa-file-invoice-dollar" style="color: #f39c12;"></i> Fines Ledger
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="disc-table">
+                    <thead>
+                        <tr>
+                            <th>Entity</th>
+                            <th>Reason</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fine in fines %}
+                        <tr>
+                            <td>
+                                <strong>{{ fine.entity_type }}</strong><br>
+                                <small class="text-muted">{{ fine.entity_name|default:"General" }}</small>
+                            </td>
+                            <td style="font-size: 0.9rem;">{{ fine.reason }}</td>
+                            <td style="font-weight: 800; color: #c0392b;">${{ fine.amount }}</td>
+                            <td>
+                                <span class="badge {% if fine.status == 'Paid' %}badge-paid{% else %}badge-pending{% endif %}">
+                                    {{ fine.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted">No fines recorded.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Issues -->
+    <div class="col-md-6">
+        <div class="discipline-card">
+            <div class="discipline-card-title">
+                <i class="fas fa-clipboard-list" style="color: #2980b9;"></i> Reported Match Issues
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="disc-table">
+                    <thead>
+                        <tr>
+                            <th>Match</th>
+                            <th>Issue Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in issues %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'match_detail' issue.match.id %}" style="text-decoration: none; font-weight: 700;">
+                                    {{ issue.match.home_team.name }} vs {{ issue.match.away_team.name }}
+                                </a><br>
+                                <small class="text-muted">{{ issue.match.date }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ issue.issue_type }}</strong><br>
+                                <small class="text-muted">{{ issue.description|truncatewords:6 }}</small>
+                            </td>
+                            <td>
+                                <span class="badge {% if issue.status == 'Resolved' %}badge-resolved{% else %}badge-open{% endif %}">
+                                    {{ issue.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center text-muted">No match issues reported.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

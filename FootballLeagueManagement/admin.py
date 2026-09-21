@@ -1,17 +1,23 @@
 from django.contrib import admin
 from .models import (
     Team, Player, Referee, Venue, Match,
-    MatchRef, Card, MatchIssue, Fine, Contract, CustomUser, Season
+    MatchRef, Card, MatchIssue, Fine, Contract, CustomUser, Season,
+    NewsArticle, Sponsor, Rule, TransferHistory,
+    Division, PromotionRelegation, Goal
 )
 
 # Customize admin site titles
-admin.site.site_header = "Pungwe Valley Football League Management"
-admin.site.site_title = "Pungwe Valley Admin Portal"
+admin.site.site_header = "PVPSL Management"
+admin.site.site_title = "PVPSL Admin Portal"
 admin.site.index_title = "League Management Dashboard"
 
 # Inline admin for Card inside Match
 class CardInline(admin.TabularInline):
     model = Card
+    extra = 1
+
+class GoalInline(admin.TabularInline):
+    model = Goal
     extra = 1
 
 
@@ -23,15 +29,15 @@ class MatchRefInline(admin.TabularInline):
 # Admin for Team
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'coach', 'contact_details')
-    search_fields = ('name', 'coach')
+    list_display = ('name', 'manager', 'coach', 'home_ground', 'year_established')
+    search_fields = ('name', 'coach', 'manager')
 
 # Admin for Player
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'team', 'position')
+    list_display = ('name', 'team', 'position', 'jersey_number', 'national_id', 'date_of_birth')
     list_filter = ('team', 'position')
-    search_fields = ('name',)
+    search_fields = ('name', 'national_id')
 
 # Admin for Referee
 @admin.register(Referee)
@@ -51,7 +57,7 @@ class MatchAdmin(admin.ModelAdmin):
     list_display = ('home_team', 'away_team', 'date', 'status')
     list_filter = ('status', 'date')
     search_fields = ('home_team__name', 'away_team__name')
-    inlines = [MatchRefInline, CardInline]
+    inlines = [MatchRefInline, GoalInline, CardInline]
 
 # Admin for MatchRef
 @admin.register(MatchRef)
@@ -102,4 +108,44 @@ class SeasonAdmin(admin.ModelAdmin):
     list_display = ('year', 'start_date', 'end_date', 'description')
     search_fields = ('year', 'description')
     list_filter = ('year', 'start_date', 'end_date')
+
+# Admin for NewsArticle
+@admin.register(NewsArticle)
+class NewsArticleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'published_date', 'author')
+    search_fields = ('title', 'content')
+    list_filter = ('published_date', 'author')
+
+# Admin for Sponsor
+@admin.register(Sponsor)
+class SponsorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'sponsor_type', 'website_url')
+    search_fields = ('name',)
+    list_filter = ('sponsor_type',)
+
+# Admin for Rule
+@admin.register(Rule)
+class RuleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'order')
+    search_fields = ('title', 'description')
+    ordering = ('order',)
        
+# Admin for TransferHistory
+@admin.register(TransferHistory)
+class TransferHistoryAdmin(admin.ModelAdmin):
+    list_display = ('player', 'from_team', 'to_team', 'transfer_date', 'transfer_fee')
+    list_filter = ('transfer_date', 'from_team', 'to_team')
+    search_fields = ('player__name',)
+
+# Admin for Division
+@admin.register(Division)
+class DivisionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'tier')
+    ordering = ('tier',)
+
+# Admin for PromotionRelegation
+@admin.register(PromotionRelegation)
+class PromotionRelegationAdmin(admin.ModelAdmin):
+    list_display = ('team', 'season', 'status', 'from_division', 'to_division')
+    list_filter = ('season', 'status', 'from_division', 'to_division')
+    search_fields = ('team__name',)

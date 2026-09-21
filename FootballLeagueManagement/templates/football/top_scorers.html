@@ -1,18 +1,321 @@
 {% extends 'football/base.html' %}
+
+{% block title %}League Statistics & Leaderboards - PVPSL{% endblock %}
+
 {% block content %}
-<h1 style="color:#f44336;">Top Scorers</h1>
-<table style="width:100%; border-collapse: collapse;">
-  <tr style="background-color:#ffe0e0;">
-    <th>Player</th>
-    <th>Team</th>
-    <th>Goals</th>
-  </tr>
-  {% for player in players %}
-  <tr>
-    <td>{{ player.name }}</td>
-    <td>{{ player.team.name }}</td>
-    <td>{{ player.goals }}</td>
-  </tr>
-  {% endfor %}
-</table>
+<style>
+.stats-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1a4d4d 100%);
+    color: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.stats-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.stats-nav .nav-link {
+    background: var(--card-bg);
+    color: var(--primary-color);
+    font-weight: 700;
+    padding: 0.75rem 1.25rem;
+    border-radius: 30px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.stats-nav .nav-link:hover, .stats-nav .nav-link.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.leaderboard-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 2rem;
+}
+
+.leaderboard-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.5rem;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.leaderboard-table td {
+    padding: 0.9rem 0.75rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-weight: 600;
+}
+
+.leaderboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.rank-badge {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    background: #e9ecef;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.rank-1 { background: #ffd700; color: #000; }
+.rank-2 { background: #c0c0c0; color: #000; }
+.rank-3 { background: #cd7f32; color: #fff; }
+</style>
+
+<div class="stats-header">
+    <h1 style="font-weight: 800; font-size: 2.5rem; margin-bottom: 0.5rem;">
+        <i class="fas fa-chart-line"></i> PVPSL Statistics Hub
+    </h1>
+    <p style="color: var(--secondary-color); font-weight: 600; margin: 0;">
+        Official Leaderboards • Player Performance • Team Rankings
+    </p>
+</div>
+
+<div class="row">
+    <!-- Top Scorers -->
+    <div class="col-md-6">
+        <div class="leaderboard-card">
+            <div class="leaderboard-title">
+                <i class="fas fa-futbol" style="color: #27ae60;"></i> Top Goal Scorers
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th style="text-align: right;">Goals</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in top_scorers %}
+                    <tr>
+                        <td>
+                            <span class="rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+                                {{ forloop.counter }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'player_profile' p.id %}" style="text-decoration: none; color: var(--primary-color); font-weight: 700;">
+                                {{ p.name }}
+                            </a>
+                        </td>
+                        <td>{{ p.team.name }}</td>
+                        <td style="text-align: right; font-weight: 800; font-size: 1.1rem; color: #27ae60;">
+                            {{ p.goals }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center text-muted">No goal records found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Most Assists -->
+    <div class="col-md-6">
+        <div class="leaderboard-card">
+            <div class="leaderboard-title">
+                <i class="fas fa-magic" style="color: #2980b9;"></i> Most Assists
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th style="text-align: right;">Assists</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in top_assists %}
+                    <tr>
+                        <td>
+                            <span class="rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+                                {{ forloop.counter }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'player_profile' p.id %}" style="text-decoration: none; color: var(--primary-color); font-weight: 700;">
+                                {{ p.name }}
+                            </a>
+                        </td>
+                        <td>{{ p.team.name }}</td>
+                        <td style="text-align: right; font-weight: 800; font-size: 1.1rem; color: #2980b9;">
+                            {{ p.assists }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center text-muted">No assist records found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Best Attack -->
+    <div class="col-md-6">
+        <div class="leaderboard-card">
+            <div class="leaderboard-title">
+                <i class="fas fa-fire" style="color: #e74c3c;"></i> Best Attack (Goals Scored)
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Team</th>
+                        <th>Matches</th>
+                        <th style="text-align: right;">Goals Scored</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in best_attack %}
+                    <tr>
+                        <td><span class="rank-badge">{{ forloop.counter }}</span></td>
+                        <td style="font-weight: 700;">{{ item.team.name }}</td>
+                        <td>{{ item.played }}</td>
+                        <td style="text-align: right; font-weight: 800; color: #e74c3c;">{{ item.gf }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Best Defence -->
+    <div class="col-md-6">
+        <div class="leaderboard-card">
+            <div class="leaderboard-title">
+                <i class="fas fa-shield-alt" style="color: #8e44ad;"></i> Best Defence (Fewest Conceded)
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Team</th>
+                        <th>Matches</th>
+                        <th style="text-align: right;">Goals Conceded</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in best_defence %}
+                    <tr>
+                        <td><span class="rank-badge">{{ forloop.counter }}</span></td>
+                        <td style="font-weight: 700;">{{ item.team.name }}</td>
+                        <td>{{ item.played }}</td>
+                        <td style="text-align: right; font-weight: 800; color: #8e44ad;">{{ item.ga }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Clean Sheets -->
+    <div class="col-md-6">
+        <div class="leaderboard-card">
+            <div class="leaderboard-title">
+                <i class="fas fa-mitten" style="color: #16a085;"></i> Clean Sheets
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Team</th>
+                        <th>Matches</th>
+                        <th style="text-align: right;">Clean Sheets</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in clean_sheets_leaderboard %}
+                    <tr>
+                        <td><span class="rank-badge">{{ forloop.counter }}</span></td>
+                        <td style="font-weight: 700;">{{ item.team.name }}</td>
+                        <td>{{ item.played }}</td>
+                        <td style="text-align: right; font-weight: 800; color: #16a085;">{{ item.clean_sheets }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Fair Play Rankings -->
+    <div class="col-md-6">
+        <div class="leaderboard-card">
+            <div class="leaderboard-title">
+                <i class="fas fa-handshake" style="color: #f39c12;"></i> Fair Play Rankings
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Team</th>
+                        <th>Yellows</th>
+                        <th>Reds</th>
+                        <th style="text-align: right;">Fair Play Pts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in fair_play_leaderboard %}
+                    <tr>
+                        <td><span class="rank-badge">{{ forloop.counter }}</span></td>
+                        <td style="font-weight: 700;">{{ item.team.name }}</td>
+                        <td><span class="badge bg-warning text-dark">{{ item.yellows }}</span></td>
+                        <td><span class="badge bg-danger">{{ item.reds }}</span></td>
+                        <td style="text-align: right; font-weight: 800; color: #f39c12;">{{ item.fair_play_pts }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

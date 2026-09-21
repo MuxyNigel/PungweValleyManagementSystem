@@ -1,0 +1,57 @@
+{% extends 'football/base.html' %}
+{% load static %}
+
+{% block title %}About Us - PVPSL{% endblock %}
+
+{% block content %}
+<div class="page-header text-center">
+  <div class="container">
+    <h1>About PVPSL</h1>
+    <p>The pinnacle of professional soccer in the Pungwe Valley</p>
+  </div>
+</div>
+
+<div class="content-wrapper">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <h2 class="mb-4">Our Mission</h2>
+      <p>The Pungwe Valley Professional Soccer League (PVPSL) is dedicated to organizing, promoting, and elevating the standard of professional soccer in the region. We strive to provide a competitive platform for local talent to shine, fostering community spirit, and delivering top-tier sports entertainment to our passionate fans.</p>
+      
+      <h2 class="mt-5 mb-4">Our History</h2>
+      <p>Founded with the vision of uniting the Pungwe Valley through the beautiful game, PVPSL has grown from a small collection of local clubs into a highly professional and fiercely competitive league. Over the years, we have continuously modernized our operations, ensuring fair play, high-quality refereeing, and state-of-the-art facility management.</p>
+      
+      <h2 class="mt-5 mb-4">Core Values</h2>
+      <div class="row mt-4">
+        <div class="col-md-4 text-center mb-4">
+          <div class="p-4" style="background: rgba(30,90,90,0.1); border-radius: 8px;">
+            <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+            <h4>Integrity</h4>
+            <p class="small text-muted">Upholding the highest standards of fair play and honesty.</p>
+          </div>
+        </div>
+        <div class="col-md-4 text-center mb-4">
+          <div class="p-4" style="background: rgba(30,90,90,0.1); border-radius: 8px;">
+            <i class="fas fa-users fa-3x text-primary mb-3"></i>
+            <h4>Community</h4>
+            <p class="small text-muted">Building strong bonds between clubs, players, and fans.</p>
+          </div>
+        </div>
+        <div class="col-md-4 text-center mb-4">
+          <div class="p-4" style="background: rgba(30,90,90,0.1); border-radius: 8px;">
+            <i class="fas fa-star fa-3x text-primary mb-3"></i>
+            <h4>Excellence</h4>
+            <p class="small text-muted">Striving for the highest quality in every match played.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="mt-5 mb-4">Contact & Queries</h2>
+      <p>Have questions, sponsorship inquiries, or fan queries? Reach out directly to our league management office.</p>
+      <div class="d-flex gap-3 flex-wrap">
+        <a href="{% url 'contact' %}" class="btn btn-primary"><i class="fas fa-headset me-2"></i> Contact & Support Page</a>
+        <a href="https://wa.me/263789727983" target="_blank" class="btn btn-success"><i class="fab fa-whatsapp me-2"></i> Direct WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

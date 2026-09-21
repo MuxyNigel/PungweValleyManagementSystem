@@ -21,6 +21,19 @@
 
     <hr>
 
+    <h5>Match Report</h5>
+    <p>{{ match.report|default:"No match report available yet." }}</p>
+
+    <h5>Goals</h5>
+    <ul>
+      {% for g in goals %}
+        <li><strong>{{ g.minute }}'</strong> - {{ g.scorer.name }} ({{ g.scorer.team.name }}) 
+            {% if g.assist %} <em class="text-muted">- Assist: {{ g.assist.name }}</em>{% endif %}</li>
+      {% empty %}
+        <li>No goals recorded.</li>
+      {% endfor %}
+    </ul>
+
     <h5>Referees</h5>
     <ul>
       {% for r in referees %}

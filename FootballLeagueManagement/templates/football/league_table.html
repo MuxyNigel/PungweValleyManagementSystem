@@ -538,6 +538,10 @@
     </div>
 
     <!-- Standings Table -->
+    {% for division_data in all_standings %}
+    {% if division_data.division_name != 'Overall' %}
+    <h3 style="color: var(--primary-color); margin-top: 2rem; margin-bottom: 1rem; font-weight: 800;">{{ division_data.division_name }}</h3>
+    {% endif %}
     <div class="table-wrapper">
         <table class="league-table">
             <thead>
@@ -556,7 +560,7 @@
             </thead>
 
             <tbody>
-                {% for entry in standings %}
+                {% for entry in division_data.standings %}
                 <tr class="{{ entry.row_class }}">
                     <td><strong>{{ entry.position }}</strong></td>
                     <td class="team-name">{{ entry.team.name }}</td>
@@ -582,6 +586,7 @@
             </tbody>
         </table>
     </div>
+    {% endfor %}
 
     <!-- Standings Legend -->
     <div class="standings-legend">

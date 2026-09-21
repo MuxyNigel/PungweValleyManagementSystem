@@ -1,0 +1,47 @@
+{% extends 'football/base.html' %}
+
+{% block title %}News - PVPSL{% endblock %}
+
+{% block content %}
+<div class="page-header text-center">
+  <div class="container">
+    <h1>League News</h1>
+    <p>Latest updates, announcements, and match reports from PVPSL</p>
+  </div>
+</div>
+
+<div class="row">
+  {% for article in articles %}
+  <div class="col-md-6 col-lg-4 mb-4">
+    <div class="card h-100" style="border-top: 4px solid var(--primary-color);">
+      {% if article.image %}
+        <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 220px; object-fit: cover;">
+      {% else %}
+        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 220px; background: var(--light-bg); color: var(--text-light);">
+          <i class="fas fa-newspaper fa-4x"></i>
+        </div>
+      {% endif %}
+      <div class="card-body d-flex flex-column">
+        <h4 class="card-title text-primary">{{ article.title }}</h4>
+        <div class="mb-3 text-muted small">
+          <span><i class="fas fa-calendar-day"></i> {{ article.published_date|date:"F j, Y" }}</span> &bull; 
+          <span><i class="fas fa-user-edit"></i> {{ article.author }}</span>
+        </div>
+        <p class="card-text">{{ article.content|truncatewords:25 }}</p>
+        <div class="mt-auto">
+          <a href="{% url 'news_detail' article.id %}" class="btn btn-primary w-100">Read Article</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="content-wrapper text-center">
+      <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+      <h3>No News Articles Found</h3>
+      <p class="text-muted">There are currently no news articles published for the league. Please check back later.</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
