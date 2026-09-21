@@ -177,6 +177,7 @@ class Card(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
     card_type = models.CharField(max_length=10, choices=STATUS_CHOICES)
+    suspension_matches = models.PositiveIntegerField(null=True, blank=True, help_text="Number of matches suspended (e.g., 3 for Red). Can be reduced upon appeal.")
 
 class MatchIssue(models.Model):
     STATUS_CHOICES = [

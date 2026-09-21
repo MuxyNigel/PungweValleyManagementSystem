@@ -480,10 +480,10 @@ def get_player_discipline(request):
         season = Season.objects.order_by('-year').first()
 
     if season:
-        cards = Card.objects.select_related('player', 'match').filter(season=season).order_by('player', 'match__date')
+        cards = Card.objects.select_related('player__team', 'match').filter(season=season).order_by('player', 'match__date')
     else:
         # fallback: all cards
-        cards = Card.objects.select_related('player', 'match').order_by('player', 'match__date')
+        cards = Card.objects.select_related('player__team', 'match').order_by('player', 'match__date')
 
     # Prepare a dict to hold per-player card info
     player_cards = defaultdict(list)
@@ -528,11 +528,12 @@ def get_player_discipline(request):
                     })
                     yellow_streak = 0  # reset streak after suspension
             elif card.card_type == 'Red':
-                # Straight red, next 3 matches missed
+                # Straight red, check suspension_matches (defaults to 3 if None)
+                matches_missed = card.suspension_matches if card.suspension_matches is not None else 3
                 suspensions.append({
                     'type': 'Straight Red',
                     'match': card.match,
-                    'reason': 'Red card'
+                    'reason': f'Red card ({matches_missed} matches)'
                 })
                 yellow_streak = 0
             else:
