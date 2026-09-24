@@ -494,19 +494,32 @@
 
 <div class="league-container">
 
-    <!-- League Header -->
-    <div class="league-header">
-        <h2 class="league-title">
-            <i class="fas fa-table"></i> League Standings
-        </h2>
-        <p class="league-subtitle">
-            PVPSL{% if selected_year %} • {{ selected_year }} Season{% endif %}{% if computed_week %} • Week {{ computed_week }}{% endif %}
-        </p>
-    </div>
+    <!-- Capture Container for Image Export -->
+    <div id="capture-container" style="background: var(--bg-color, #f4f7f6); padding: 1.5rem; border-radius: 10px;">
+        <!-- League Header -->
+        <div class="league-header">
+            <h2 class="league-title">
+                <i class="fas fa-table"></i> League Standings
+            </h2>
+            <p class="league-subtitle">
+                PVPSL{% if selected_year %} • {{ selected_year }} Season{% endif %}{% if computed_week %} • Week {{ computed_week }}{% endif %}
+            </p>
+        </div>
 
     <!-- Filters -->
-    <div class="standings-filters">
+    <div class="standings-filters" data-html2canvas-ignore="true">
         <form method="get" class="filter-group">
+            <label>
+                League Type
+                <select name="division_id">
+                    {% for div in all_divisions %}
+                    <option value="{{ div.id }}" {% if selected_division_id|stringformat:"s" == div.id|stringformat:"s" %}selected{% endif %}>
+                        {{ div.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
             <label>
                 Season Year
                 <select name="year">
@@ -588,6 +601,17 @@
             </tbody>
         </table>
     </div>
+        <!-- Notes section for point deductions -->
+        {% if division_data.notes %}
+        <div class="standings-notes" style="margin-top: 1rem; padding: 1rem; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+            <strong style="color: #856404; display: block; margin-bottom: 0.5rem;"><i class="fas fa-exclamation-triangle"></i> Notes / Deductions:</strong>
+            <ul style="margin: 0; padding-left: 1.5rem; color: #856404;">
+                {% for note in division_data.notes %}
+                <li>{{ note }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
     {% endfor %}
 
     <!-- Standings Legend -->
@@ -610,6 +634,8 @@
             </div>
         </div>
     </div>
+    
+    </div> <!-- End Capture Container -->
 
     <!-- Download button -->
     <div class="export-section">
@@ -629,7 +655,7 @@
     if(btn){
       btn.addEventListener('click', function(){
           // capture heading + table together
-          const el = document.querySelector('.table-wrapper');
+          const el = document.getElementById('capture-container');
           if(!el) return;
           html2canvas(el, {useCORS:true, scale:2}).then(canvas => {
               const link = document.createElement('a');

@@ -411,6 +411,18 @@
   
   <form method="get" class="filter-form">
     <label>
+      League Type
+      <select name="division_id">
+        <option value="">All Leagues</option>
+        {% for div in divisions %}
+          <option value="{{ div.id }}" {% if selected_division_id == div.id|stringformat:"s" %}selected{% endif %}>
+            {{ div.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>
       Home Team
       <select name="home_team">
         <option value="">All Teams</option>

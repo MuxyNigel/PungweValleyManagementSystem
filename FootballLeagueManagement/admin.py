@@ -3,7 +3,7 @@ from .models import (
     Team, Player, Referee, Venue, Match,
     MatchRef, Card, MatchIssue, Fine, Contract, CustomUser, Season,
     NewsArticle, Sponsor, Rule, TransferHistory,
-    Division, PromotionRelegation, Goal
+    Division, PromotionRelegation, Goal, PointDeduction
 )
 
 # Customize admin site titles
@@ -108,7 +108,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 # Admin for Season
 @admin.register(Season)
 class SeasonAdmin(admin.ModelAdmin):
-    list_display = ('year', 'start_date', 'end_date', 'description')
+    list_display = ('year', 'start_date', 'end_date', 'current_match_week', 'description')
     search_fields = ('year', 'description')
     list_filter = ('year', 'start_date', 'end_date')
 
@@ -152,3 +152,9 @@ class PromotionRelegationAdmin(admin.ModelAdmin):
     list_display = ('team', 'season', 'status', 'from_division', 'to_division')
     list_filter = ('season', 'status', 'from_division', 'to_division')
     search_fields = ('team__name',)
+
+@admin.register(PointDeduction)
+class PointDeductionAdmin(admin.ModelAdmin):
+    list_display = ('team', 'season', 'points_deducted', 'reason')
+    list_filter = ('season', 'team')
+    search_fields = ('team__name', 'reason')

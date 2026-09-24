@@ -9,6 +9,7 @@ class Season(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
+    current_match_week = models.PositiveIntegerField(default=1, help_text="Current match week/matchday for this season.")
 
     def __str__(self):
         return f"{self.year} Season"
@@ -320,6 +321,15 @@ class PromotionRelegation(models.Model):
 
     def __str__(self):
         return f"{self.team.name} - {self.status} to {self.to_division.name} ({self.season.year})"
+
+class PointDeduction(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='point_deductions')
+    season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    points_deducted = models.PositiveIntegerField()
+    reason = models.CharField(max_length=255, help_text="Reason for deduction (e.g., 'using unregistered player')")
+
+    def __str__(self):
+        return f"{self.team.name} deducted {self.points_deducted}points for {self.reason}"
 
 class Goal(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='goals')

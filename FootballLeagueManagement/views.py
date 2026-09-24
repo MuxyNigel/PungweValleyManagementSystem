@@ -22,6 +22,7 @@ from .models import (
     Division,
     Goal,
     Fine,
+    PointDeduction,
 )
 
 
@@ -48,6 +49,7 @@ def match_list(request):
     year = request.GET.get('year')
     date = request.GET.get('date')
     status = request.GET.get('status')
+    division_id = request.GET.get('division_id')
 
     if home_team:
         matches = matches.filter(home_team_id=home_team)
@@ -59,16 +61,21 @@ def match_list(request):
         matches = matches.filter(date=date)
     if status:
         matches = matches.filter(status=status)
+    if division_id:
+        matches = matches.filter(Q(home_team__division_id=division_id) | Q(away_team__division_id=division_id))
 
     teams = Team.objects.all()
     years = [d.year for d in Match.objects.dates('date', 'year')]
     statuses = [choice[0] for choice in Match.STATUS_CHOICES]
+    divisions = Division.objects.all().order_by('tier')
 
     return render(request, 'football/match_list.html', {
         'matches': matches,
         'teams': teams,
         'years': years,
         'statuses': statuses,
+        'divisions': divisions,
+        'selected_division_id': division_id,
     })
 
 
@@ -104,29 +111,48 @@ def league_standings(request):
     # Filters
     year = request.GET.get('year')
     scope = request.GET.get('scope', '')  # '', 'home', 'away' 
+    division_id = request.GET.get('division_id')
 
     # Seasons for filter dropdown
     seasons = Season.objects.order_by('-year')
+    
+    all_divisions = Division.objects.all().order_by('tier')
+    if all_divisions.exists():
+        if not division_id:
+            division_id = str(all_divisions.first().id)
+        divisions_to_display = all_divisions.filter(id=division_id)
+    else:
+        divisions_to_display = all_divisions
+        division_id = None
 
     # Base matches queryset (filtered by season/year if provided)
     matches_qs = Match.objects.select_related('home_team', 'away_team')
+    deductions_qs = PointDeduction.objects.select_related('team')
+    
+    selected_season = None
     if year:
+        selected_season = seasons.filter(year=year).first()
         matches_qs = matches_qs.filter(season__year=year)
+        deductions_qs = deductions_qs.filter(season__year=year)
+    else:
+        selected_season = seasons.first()
+        if selected_season:
+            matches_qs = matches_qs.filter(season=selected_season)
+            deductions_qs = deductions_qs.filter(season=selected_season)
 
     # Only consider matches that are Completed for table calculations
     matches_qs = matches_qs.filter(status='Completed')
 
-    divisions = Division.objects.all().order_by('tier')
     all_standings = []
     
     # We will compute an overall computed_week across the whole league
     all_played_counts = []
 
     # If no divisions exist, put all teams in a dummy division
-    if not divisions.exists():
+    if not all_divisions.exists():
         divisions_list = [{'id': None, 'name': 'Overall', 'obj': None}]
     else:
-        divisions_list = [{'id': d.id, 'name': d.name, 'obj': d} for d in divisions]
+        divisions_list = [{'id': d.id, 'name': d.name, 'obj': d} for d in divisions_to_display]
 
     for div in divisions_list:
         if div['obj'] is None:
@@ -179,7 +205,11 @@ def league_standings(request):
             )['total'] or 0
 
             goal_difference = goals_for - goals_against
-            points = wins * 3 + draws
+            
+            # Apply point deductions
+            team_deductions = deductions_qs.filter(team=team)
+            total_deduction = team_deductions.aggregate(total=Sum('points_deducted'))['total'] or 0
+            points = (wins * 3 + draws) - total_deduction
 
             standings.append({
                 'team': team,
@@ -190,7 +220,8 @@ def league_standings(request):
                 'goals_for': goals_for,
                 'goals_against': goals_against,
                 'goal_difference': goal_difference,
-                'points': points
+                'points': points,
+                'deductions': total_deduction,
             })
 
         any_played = any(entry['played'] > 0 for entry in standings)
@@ -223,25 +254,42 @@ def league_standings(request):
             else:
                 entry['row_class'] = ''
 
+        # Get deductions notes for this division
+        division_notes = []
+        if div['obj'] is None:
+            div_deductions = deductions_qs.all()
+        else:
+            div_deductions = deductions_qs.filter(team__division=div['obj'])
+            
+        for deduction in div_deductions:
+            division_notes.append(f"Note, {deduction.team.name} deducted {deduction.points_deducted}points for {deduction.reason}")
+
         all_standings.append({
             'division_name': div['name'],
             'division_id': div['id'],
-            'standings': standings
+            'standings': standings,
+            'notes': division_notes
         })
 
-    # Determine automatic week
+    # Determine automatic week if not set on season
     played_counts = Counter(p for p in all_played_counts if p > 0)
     if played_counts:
         computed_week = max(played_counts.items(), key=lambda x: (x[1], x[0]))[0]
     else:
         computed_week = 1
+        
+    display_week = computed_week
+    if selected_season and selected_season.current_match_week:
+        display_week = selected_season.current_match_week
 
     context = {
         'all_standings': all_standings,
         'seasons': seasons,
-        'selected_year': year,
+        'selected_year': selected_season.year if selected_season else year,
         'selected_scope': scope,
-        'computed_week': computed_week,
+        'computed_week': display_week,
+        'all_divisions': all_divisions,
+        'selected_division_id': division_id,
     }
 
     return render(request, 'football/league_table.html', context)
