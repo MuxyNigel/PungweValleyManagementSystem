@@ -576,6 +576,76 @@
       </div>
     </div>
   </div>
+
+  <!-- About Us Section (Moved from About Page) -->
+  <div class="about-section mt-5" style="background: white; border-radius: 12px; padding: 3rem 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); color: #333;">
+    <div class="section-title">
+      <h2>About PVPSL</h2>
+      <p style="color: #555;">The pinnacle of professional soccer in the Pungwe Valley</p>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-10 offset-md-1">
+        <h3 class="mb-3" style="color: var(--primary-color);">Our Mission</h3>
+        <p style="color: #333; line-height: 1.6;">The Pungwe Valley Professional Soccer League (PVPSL) is dedicated to organizing, promoting, and elevating the standard of professional soccer in the region. We strive to provide a competitive platform for local talent to shine, fostering community spirit, and delivering top-tier sports entertainment to our passionate fans.</p>
+        
+        <h3 class="mt-4 mb-3" style="color: var(--primary-color);">Our History</h3>
+        <p style="color: #333; line-height: 1.6;">Founded with the vision of uniting the Pungwe Valley through the beautiful game, PVPSL has grown from a small collection of local clubs into a highly professional and fiercely competitive league. Over the years, we have continuously modernized our operations, ensuring fair play, high-quality refereeing, and state-of-the-art facility management.</p>
+        
+        <h3 class="mt-4 mb-4" style="color: var(--primary-color);">Core Values</h3>
+        <div class="row">
+          <div class="col-md-4 text-center mb-4">
+            <div class="p-4" style="background: rgba(30,90,90,0.05); border-radius: 8px; height: 100%;">
+              <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+              <h4>Integrity</h4>
+              <p class="small text-muted mb-0">Upholding the highest standards of fair play and honesty.</p>
+            </div>
+          </div>
+          <div class="col-md-4 text-center mb-4">
+            <div class="p-4" style="background: rgba(30,90,90,0.05); border-radius: 8px; height: 100%;">
+              <i class="fas fa-users fa-3x text-primary mb-3"></i>
+              <h4>Community</h4>
+              <p class="small text-muted mb-0">Building strong bonds between clubs, players, and fans.</p>
+            </div>
+          </div>
+          <div class="col-md-4 text-center mb-4">
+            <div class="p-4" style="background: rgba(30,90,90,0.05); border-radius: 8px; height: 100%;">
+              <i class="fas fa-star fa-3x text-primary mb-3"></i>
+              <h4>Excellence</h4>
+              <p class="small text-muted mb-0">Striving for the highest quality in every match played.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sponsors Section -->
+  <div class="sponsors-section mt-5 mb-5" style="background: linear-gradient(135deg, #f8f9fa 0%, #f0f8f8 100%); border-radius: 12px; padding: 3rem 2rem;">
+    <div class="section-title">
+      <h2>Our Sponsors</h2>
+      <p>Proud partners supporting the growth of football</p>
+    </div>
+    
+    <div class="sponsors-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; align-items: center;">
+      {% for sponsor in sponsors %}
+        <div class="sponsor-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); text-align: center; min-width: 150px;">
+          {% if sponsor.logo %}
+            <img src="{{ sponsor.logo.url }}" alt="{{ sponsor.name }}" style="max-height: 80px; max-width: 100%; object-fit: contain; margin-bottom: 1rem;">
+          {% else %}
+            <div style="height: 80px; display: flex; align-items: center; justify-content: center; background: #eee; border-radius: 4px; margin-bottom: 1rem;">
+              <i class="fas fa-building fa-2x text-muted"></i>
+            </div>
+          {% endif %}
+          <h5 class="mb-0" style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold;">{{ sponsor.name }}</h5>
+        </div>
+      {% empty %}
+        <div class="text-center w-100 py-4">
+          <p class="text-muted"><i class="fas fa-handshake me-2"></i> Our proud sponsors will be displayed here.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 
 {% endblock %}

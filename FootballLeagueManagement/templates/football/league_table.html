@@ -502,7 +502,7 @@
                 <i class="fas fa-table"></i> League Standings
             </h2>
             <p class="league-subtitle">
-                PVPSL{% if selected_year %} • {{ selected_year }} Season{% endif %}{% if computed_week %} • Week {{ computed_week }}{% endif %}
+                Pungwe Valley Professional Soccer League{% if selected_year %} • {{ selected_year }} Season{% endif %}{% if computed_week %} • Week {{ computed_week }}{% endif %}
             </p>
         </div>
 
@@ -514,7 +514,7 @@
                 <select name="division_id">
                     {% for div in all_divisions %}
                     <option value="{{ div.id }}" {% if selected_division_id|stringformat:"s" == div.id|stringformat:"s" %}selected{% endif %}>
-                        {{ div.name }}
+                        {{ div.short_name }}
                     </option>
                     {% endfor %}
                 </select>

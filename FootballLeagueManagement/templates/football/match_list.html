@@ -416,7 +416,7 @@
         <option value="">All Leagues</option>
         {% for div in divisions %}
           <option value="{{ div.id }}" {% if selected_division_id == div.id|stringformat:"s" %}selected{% endif %}>
-            {{ div.name }}
+            {{ div.short_name }}
           </option>
         {% endfor %}
       </select>

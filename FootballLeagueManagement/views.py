@@ -31,7 +31,11 @@ from .models import (
 # -------------------------
 def home(request):
     latest_news = NewsArticle.objects.all()[:3]
-    return render(request, 'football/home.html', {'latest_news': latest_news})
+    sponsors = Sponsor.objects.all()
+    return render(request, 'football/home.html', {
+        'latest_news': latest_news,
+        'sponsors': sponsors
+    })
 
 
 # -------------------------
@@ -68,6 +72,8 @@ def match_list(request):
     years = [d.year for d in Match.objects.dates('date', 'year')]
     statuses = [choice[0] for choice in Match.STATUS_CHOICES]
     divisions = Division.objects.all().order_by('tier')
+    for div in divisions:
+        div.short_name = div.name.replace("Pungwe Valley Professional Soccer League", "PVPSL")
 
     return render(request, 'football/match_list.html', {
         'matches': matches,
@@ -117,6 +123,9 @@ def league_standings(request):
     seasons = Season.objects.order_by('-year')
     
     all_divisions = Division.objects.all().order_by('tier')
+    for div in all_divisions:
+        div.short_name = div.name.replace("Pungwe Valley Professional Soccer League", "PVPSL")
+        
     if all_divisions.exists():
         if not division_id:
             division_id = str(all_divisions.first().id)
