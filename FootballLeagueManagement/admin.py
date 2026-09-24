@@ -29,8 +29,8 @@ class MatchRefInline(admin.TabularInline):
 # Admin for Team
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'manager', 'coach', 'home_ground', 'year_established')
-    search_fields = ('name', 'coach', 'manager')
+    list_display = ('name', 'nickname', 'manager', 'coach', 'home_ground', 'year_established')
+    search_fields = ('name', 'nickname', 'coach', 'manager')
 
 # Admin for Player
 @admin.register(Player)

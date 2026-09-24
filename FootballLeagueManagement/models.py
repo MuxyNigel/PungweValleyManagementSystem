@@ -28,6 +28,7 @@ class Team(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, null=True, blank=True)
     division = models.ForeignKey(Division, on_delete=models.SET_NULL, null=True, blank=True, related_name='teams')
     name = models.CharField(max_length=100, unique=True)
+    nickname = models.CharField(max_length=100, null=True, blank=True)
     logo = models.ImageField(upload_to='team_logos/')
     home_ground = models.ForeignKey('Venue', on_delete=models.SET_NULL, null=True, blank=True, related_name='home_teams')
     coach = models.CharField(max_length=100)
